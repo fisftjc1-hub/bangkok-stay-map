@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="一次比較曼谷 8 間包棟住宿的位置、床位與參考價格。2026 年 12 月 13–16 日，15 人、3 晚。">
+  <meta name="theme-color" content="#125c53">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>曼谷住宿地圖｜8 間包棟候選</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#stay-list">跳到住宿選項</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="曼谷住宿地圖首頁"><span class="brand-symbol" aria-hidden="true">B</span><span><span class="eyebrow">BANGKOK · STAY TOGETHER</span><h1>曼谷住宿地圖</h1></span></a>
+    <div class="trip"><span>2026.12.13 — 12.16</span><span class="trip-divider"></span><span>15 人 · 3 晚</span></div>
+    <a class="header-link" id="open-google" target="_blank" rel="noopener noreferrer">在 Google 地圖開啟 <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="workspace">
+    <aside class="options-panel" aria-label="八間住宿比較">
+      <div class="options-heading"><div><p class="eyebrow">THE SHORTLIST</p><h2>一起住的 8 種選擇</h2></div><span class="count">08</span></div>
+      <p class="intro">點開住宿看床位與價格，或在地圖上比較位置。編號依候選清單排序。</p>
+      <div id="stay-list" class="stay-list"></div>
+      <div class="source-note"><strong>資料與報價：2026/10/08</strong><p>參考價為 15 人入住 3 晚的頁面報價，可能變動；不含另收押金、加購服務。空房與成交價以訂房頁為準。</p><p>「待確認」代表尚未取得指定日期的整棟報價，不代表免費或無房。</p></div>
+    </aside>
+    <section class="map-panel" aria-label="Google 地圖與所有候選位置">
+      <div class="map-toolbar"><div><span class="live-dot" aria-hidden="true"></span><strong id="map-label">全部 8 間住宿</strong></div><button id="show-all" type="button">顯示全部位置 <span aria-hidden="true">↗</span></button></div>
+      <div class="map-wrap"><iframe id="stay-map" title="曼谷八間住宿的 Google 客製地圖" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+      <div class="map-caption"><span class="location-icon" aria-hidden="true">◎</span><p><strong>先看區位，再確認入口。</strong>Airbnb 的 6 個標記是公開約略位置；Ratchada 與 Number3 採 Google 商家標記。接送地址仍需向房東確認。</p></div>
+      <div class="itinerary-strip"><span>行程對照</span><p>12/13 舊城・河岸　<span>／</span>　12/14 Siam・Bangna　<span>／</span>　12/15 Sukhumvit　<span>／</span>　12/16 Siam・機場</p></div>
+    </section>
+  </main>
+  <noscript><p>請啟用 JavaScript 顯示比較資料。也可以直接<a href="https://www.google.com/maps/d/viewer?mid=1jGxUs7SIGYx37n1bSOzc9mLkoMS_sEw">開啟完整 Google 地圖</a>。</p></noscript>
+</body>
+</html>
