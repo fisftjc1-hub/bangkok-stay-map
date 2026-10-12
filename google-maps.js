@@ -12,6 +12,7 @@
       const url=new URL('https://maps.googleapis.com/maps/api/js');
       url.searchParams.set('key',config.googleApiKey);url.searchParams.set('v','weekly');
       url.searchParams.set('loading','async');url.searchParams.set('language','zh-TW');url.searchParams.set('region','TH');
+      url.searchParams.set('auth_referrer_policy','origin');
       url.searchParams.set('callback','tripGoogleReady');script.src=url.href;script.async=true;
       script.onerror=()=>{clearTimeout(timer);sdkPromise=null;reject(new Error('Google 地圖載入失敗'));};
       document.head.append(script);
