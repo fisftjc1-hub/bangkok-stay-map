@@ -23,3 +23,11 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .area-tooltip{background:#fffffff2;border:0;box-shadow:none;padding:3px 7px;color:#29463e;font-size:10px;font-weight:600;letter-spacing:.02em}
+.map-key #toggle-routes{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:2px 0;color:var(--muted);font-size:10px}
+.map-key #toggle-routes[aria-pressed=false]{opacity:.45}.map-key #toggle-routes[aria-pressed=false]:before{border-top-style:dashed}
+.areas-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:15px 0 9px}.areas-heading h3{font-size:12px;font-weight:650}.areas-heading>span{font-size:10px;color:var(--muted)}
+.area-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.area-card{display:grid;gap:4px;text-align:left;border:1px solid var(--line);border-left:3px solid var(--area-color);border-radius:7px;background:#fff;color:var(--ink);padding:10px 12px;min-width:0}.area-card:hover,.area-card[aria-pressed=true]{border-color:var(--area-color);background:color-mix(in srgb,var(--area-color) 6%,white)}.area-card strong{font-size:12px;font-weight:650}.area-members{font-size:10px;color:var(--muted);overflow-wrap:anywhere}.area-meta{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted);margin-top:3px}.area-distance{color:var(--green);font-weight:650;white-space:nowrap}
+.transfer-summary{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:11px;background:#e9efeb;border-radius:6px;padding:10px 12px}.transfer-summary strong{font-weight:650}.transfer-note{color:var(--muted);font-size:10px}
+@media(min-width:1450px){.area-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.area-card{padding:10px}.area-card strong{font-size:11px}.area-meta{flex-wrap:wrap;gap:2px}.areas-heading>span{font-size:9px}.day-tabs{scrollbar-width:thin}}
+@media(max-width:1350px){.day-tab-label{display:none}}
