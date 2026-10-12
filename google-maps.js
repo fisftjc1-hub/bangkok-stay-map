@@ -24,7 +24,13 @@
     const steps=(route.legs||[]).flatMap(leg=>leg.steps||[]);
     const walk=steps.filter(step=>step.travelMode==='WALKING');
     const rides=steps.filter(step=>step.transitDetails);
-    return {walkingMeters:walk.reduce((sum,step)=>sum+(step.distanceMeters||0),0),walkingSeconds:walk.reduce((sum,step)=>sum+(step.staticDurationMillis||0)/1000,0),transfers:Math.max(0,rides.length-1),lines:rides.map(step=>step.transitDetails.transitLine?.shortName||step.transitDetails.transitLine?.name||step.transitDetails.transitLine?.vehicle?.name||'大眾交通'),steps:steps.map(step=>({mode:step.travelMode,distanceMeters:step.distanceMeters||0,durationSeconds:(step.staticDurationMillis||0)/1000,line:step.transitDetails?.transitLine?.shortName||step.transitDetails?.transitLine?.name||step.transitDetails?.transitLine?.vehicle?.name||'',from:step.transitDetails?.departureStop?.name||'',to:step.transitDetails?.arrivalStop?.name||'',agencies:(step.transitDetails?.transitLine?.agencies||[]).map(agency=>({name:agency.name,url:agency.url?.toString()}))}))};
+    const segments=[];
+    for(const step of steps) {
+      const previous=segments.at(-1);
+      if(step.travelMode==='WALKING'&&previous?.mode==='WALKING') {previous.distanceMeters+=step.distanceMeters||0;previous.durationSeconds+=(step.staticDurationMillis||0)/1000;continue;}
+      segments.push({mode:step.travelMode,distanceMeters:step.distanceMeters||0,durationSeconds:(step.staticDurationMillis||0)/1000,line:step.transitDetails?.transitLine?.shortName||step.transitDetails?.transitLine?.name||step.transitDetails?.transitLine?.vehicle?.name||'',from:step.transitDetails?.departureStop?.name||'',to:step.transitDetails?.arrivalStop?.name||'',agencies:(step.transitDetails?.transitLine?.agencies||[]).map(agency=>({name:agency.name,url:agency.url?.toString()}))});
+    }
+    return {walkingMeters:walk.reduce((sum,step)=>sum+(step.distanceMeters||0),0),walkingSeconds:walk.reduce((sum,step)=>sum+(step.staticDurationMillis||0)/1000,0),transfers:Math.max(0,rides.length-1),lines:rides.map(step=>step.transitDetails.transitLine?.shortName||step.transitDetails.transitLine?.name||step.transitDetails.transitLine?.vehicle?.name||'大眾交通'),steps:segments};
   }
   class GoogleTripMap {
     constructor(container,config,callbacks) {

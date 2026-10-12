@@ -110,14 +110,14 @@
         button.append(metrics);
         if(result.transit) {
           if(result.transit.lines.length)button.append(el('span','transit-lines',result.transit.lines.join(' → ')));
-          button.append(el('span','transit-meta','步行 '+(result.transit.walkingMeters/1000).toFixed(1)+' km'+(result.transit.lines.length?' · '+result.transit.transfers+' 次轉乘':'')));
+          if(result.transit.lines.length)button.append(el('span','transit-meta','步行 '+(result.transit.walkingMeters/1000).toFixed(1)+' km · '+result.transit.transfers+' 次轉乘'));
         }
       } else button.append(el('span','road-status',result.status==='boat'?'需船班接駁':result.status==='loading'?'載入中':pair.travelMode==='TRANSIT'?'大眾交通路線未取得':'開車路線未取得'));
       button.addEventListener('click',()=>selectRoad(pair.id));
       const google=link(pair.requiresBoat?'Google 地圖 ↗':'Google 導航 ↗',pair.requiresBoat?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(pair.destination.lat+','+pair.destination.lng):navigation.directions(pair.origin,pair.destination,pair.travelMode),'road-google');
       tile.append(target,button,google);grid.append(tile);
       if(result.transit?.steps.length) {
-        const details=el('details','transit-details'),summary=el('summary','','搭乘路線'),steps=el('ol','transit-steps');
+        const details=el('details','transit-details'),summary=el('summary','',result.transit.lines.length?'搭乘路線':'步行路線'),steps=el('ol','transit-steps');
         for(const step of result.transit.steps) {
           if(step.mode==='WALKING')steps.append(el('li','','步行 '+Math.round(step.distanceMeters)+' m'+(step.durationSeconds?' · 約 '+Math.max(1,Math.round(step.durationSeconds/60))+' 分':'')));
           else {const item=el('li','',''+(step.line||'大眾交通')+' · '+step.from+' → '+step.to);for(const agency of step.agencies)if(agency.name&&agency.url)item.append(link(agency.name,agency.url,'transit-agency'));steps.append(item);}
