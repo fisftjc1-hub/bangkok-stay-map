@@ -1,3 +1,1 @@
-// Public browser configuration. Keys must be restricted to this site's HTTPS
-// referrer and to Maps JavaScript API + Routes API before enabling this provider.
-window.TRIP_MAPS_CONFIG={googleApiKey:'',mapId:'',trafficAware:false};
+window.TRIP_MAPS_CONFIG={googleApiKey:'AIzaSyA7KxOcEWiyk8ZD0_bYRhUB-DzhF5oB5Gk',mapId:'f509889483892aefc6d903ba',trafficAware:false};

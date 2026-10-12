@@ -8,7 +8,7 @@ The static site includes an interactive itinerary map and the public Google My M
 
 - `index.html`, `styles.css`, `app.js`: responsive comparison page.
 - `navigation.js`: directed origin/destination planning, encoded-road geometry decoding, and route-file loading.
-- `google-maps.js`, `maps-config.js`: Google Maps renderer and Routes API adapter. Configuration is blank until the account, billing and restricted browser key are ready.
+- `google-maps.js`, `maps-config.js`: Google Maps renderer and Routes API adapter, with a domain-restricted browser key and JavaScript vector map ID.
 - `terms.html`, `privacy.html`: public service terms and privacy information linked when Google Maps is enabled.
 - `roads/`: precomputed OSRM driving paths for each home and each mainland itinerary point, with distance, duration, and snapped endpoints.
 - `data.js`: sourced property information and the Google My Maps ID.
@@ -27,7 +27,9 @@ With blank Google configuration, displayed road paths use OSRM / OpenStreetMap. 
 
 When Google configuration is enabled, all interactive markers, activity polygons and routes are rendered on a Google map. Routes are computed independently in the selected direction with at most two outstanding requests. Changing the origin abandons queued work and prevents stale results from painting. Results are held only for the current origin/display; no Google route payload is exported, stored in local storage, or written to the static road files. Date filters reuse the current origin's results, requesting only missing destinations. `trafficAware` defaults to false (basic driving requests); setting it true uses traffic-aware route computation and changes the billing SKU. Route warnings returned by Google are displayed with their route.
 
-Before activation, enable Maps JavaScript API and Routes API on the chosen Cloud project, create a JavaScript map ID, and restrict the browser key to `https://fisftjc1-hub.github.io/*` and those two APIs. The loader uses origin-only authentication; a repository-path referrer restriction can fail because browsers redact paths on cross-origin requests. Use a separate key or referrer entry for any local testing. Apply appropriate provider quotas and monitor billing; budget alerts alone are not spending caps. Do not publish unrestricted keys or other credentials. Actual provider validation remains pending until the user completes Google Cloud first-use terms/billing and supplies the restricted configuration.
+The Cloud project has Maps JavaScript API and Routes API enabled. The browser key is restricted to `https://fisftjc1-hub.github.io/*` and those two APIs. The loader uses origin-only authentication; a repository-path referrer restriction can fail because browsers redact paths on cross-origin requests. Use a separate key or referrer entry for any local testing. Monitor usage in Google Cloud; budget alerts alone are not spending caps. Do not publish unrestricted keys or other credentials.
+
+Live provider validation on 12 October 2026 confirmed the Google vector map, three Nana-to-Sukhumvit routes, and eight Terminal-21-to-home routes. Nana to Terminal 21 returned 6.9 km / 18 minutes; the independently computed return direction returned 2.2 km / 9 minutes. Route-card focus and mouse-wheel zoom were also checked in the deployed browser.
 
 Activity polygons are approximate planning areas rather than walking isochrones. Distances to their boundaries remain explicitly labelled as straight-line distances. The 12/14 map uses plan A; massage and rooftop venues on 12/15 remain unspecified. Big C uses the Ratchadamri branch. Airport selection is Suvarnabhumi BKK, confirmed by the user; the source itinerary's 10:30 airport departure is displayed with the shopping schedule flagged for adjustment.
 

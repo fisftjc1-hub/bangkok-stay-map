@@ -92,7 +92,7 @@
       const content=document.createElement('div');content.className='google-marker';content.append(badge);
       const label=document.createElement('span');label.className='google-marker-label';label.textContent=type==='home'?point.short:point.name;content.append(label);
       const marker=new this.AdvancedMarkerElement({map:this.map,position:position(point),content,title:label.textContent,gmpClickable:true,zIndex:selected?1000:type==='home'?100:50,collisionBehavior:selected||type==='home'?window.google.maps.CollisionBehavior.REQUIRED:window.google.maps.CollisionBehavior.OPTIONAL_AND_HIDES_LOWER_PRIORITY});
-      marker.addListener('click',()=>type==='home'?this.callbacks.onHome(point):this.callbacks.onPlace(point));
+      marker.addEventListener('gmp-click',()=>type==='home'?this.callbacks.onHome(point):this.callbacks.onPlace(point));
       this.markers.push(marker);
     }
     drawPaths(pairs,resultFor,showRoutes,activeRoad) {
