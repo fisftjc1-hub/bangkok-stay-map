@@ -20,6 +20,12 @@
     return sdkPromise;
   }
   const position=point=>({lat:typeof point.lat==='function'?point.lat():point.lat,lng:typeof point.lng==='function'?point.lng():point.lng});
+  function transitSummary(route) {
+    const steps=(route.legs||[]).flatMap(leg=>leg.steps||[]);
+    const walk=steps.filter(step=>step.travelMode==='WALKING');
+    const rides=steps.filter(step=>step.transitDetails);
+    return {walkingMeters:walk.reduce((sum,step)=>sum+(step.distanceMeters||0),0),walkingSeconds:walk.reduce((sum,step)=>sum+(step.staticDurationMillis||0)/1000,0),transfers:Math.max(0,rides.length-1),lines:rides.map(step=>step.transitDetails.transitLine?.shortName||step.transitDetails.transitLine?.name||step.transitDetails.transitLine?.vehicle?.name||'大眾交通'),steps:steps.map(step=>({mode:step.travelMode,distanceMeters:step.distanceMeters||0,durationSeconds:(step.staticDurationMillis||0)/1000,line:step.transitDetails?.transitLine?.shortName||step.transitDetails?.transitLine?.name||step.transitDetails?.transitLine?.vehicle?.name||'',from:step.transitDetails?.departureStop?.name||'',to:step.transitDetails?.arrivalStop?.name||'',agencies:(step.transitDetails?.transitLine?.agencies||[]).map(agency=>({name:agency.name,url:agency.url?.toString()}))}))};
+  }
   class GoogleTripMap {
     constructor(container,config,callbacks) {
       this.container=container;this.config=config;this.callbacks=callbacks;
@@ -38,9 +44,10 @@
     }
     clearPaths() {for(const lines of this.paths.values()) for(const line of lines) line.setMap(null);this.paths.clear();}
     cancel() {this.generation++;}
-    async compute(center,pairs,onResult) {
+    async compute(center,pairs,onResult,options={}) {
       const generation=++this.generation;
-      const key=center?center.type+':'+center.point.id:'';
+      const timeKey=pairs.some(pair=>pair.travelMode==='TRANSIT')?options.departureTime?.toISOString()||'now':'';
+      const key=center?center.type+':'+center.point.id+'|'+timeKey+'|'+Boolean(this.config.trafficAware):'';
       if(key!==this.centerKey) {this.centerKey=key;this.routes.clear();this.clearPaths();}
       if(!center) return;
       await this.ready();
@@ -54,9 +61,13 @@
         while(index<jobs.length&&generation===this.generation) {
           const pair=jobs[index++];let result;
           try {
-            const response=await this.Route.computeRoutes({origin:position(pair.origin),destination:position(pair.destination),travelMode:'DRIVING',routingPreference:this.config.trafficAware?'TRAFFIC_AWARE':'TRAFFIC_UNAWARE',region:'th',fields:['path','distanceMeters','durationMillis','warnings']});
+            const mode=pair.travelMode||'DRIVING';
+            const request={origin:position(pair.origin),destination:position(pair.destination),travelMode:mode,region:'th',fields:['path','distanceMeters','durationMillis','warnings']};
+            if(mode==='TRANSIT') {request.fields.push('legs');request.transitPreference={routingPreference:'FEWER_TRANSFERS'};if(options.departureTime)request.departureTime=options.departureTime;}
+            else request.routingPreference=this.config.trafficAware?'TRAFFIC_AWARE':'TRAFFIC_UNAWARE';
+            const response=await this.Route.computeRoutes(request);
             const route=response.routes?.[0];
-            result=route?.path?.length&&Number.isFinite(route.distanceMeters)&&Number.isFinite(route.durationMillis)?{status:'ready',distanceMeters:route.distanceMeters,durationSeconds:route.durationMillis/1000,path:route.path.map(point=>{const p=position(point);return [p.lat,p.lng];}),warnings:route.warnings||[],googleRoute:route}:{status:'unavailable'};
+            result=route?.path?.length&&Number.isFinite(route.distanceMeters)&&Number.isFinite(route.durationMillis)?{status:'ready',travelMode:mode,distanceMeters:route.distanceMeters,durationSeconds:route.durationMillis/1000,path:route.path.map(point=>{const p=position(point);return [p.lat,p.lng];}),warnings:route.warnings||[],googleRoute:route,...(mode==='TRANSIT'?{transit:transitSummary(route)}:{})}:{status:'unavailable'};
           } catch(error) {console.warn('Google Routes: '+(error?.message||'route request failed'));result={status:'unavailable'};}
           if(generation!==this.generation) return;
           if(result.status==='ready') this.routes.set(pair.id,result);onResult(pair,result);
@@ -100,7 +111,7 @@
       for(const pair of pairs) {
         const result=resultFor(pair);if(result.status!=='ready'||!result.googleRoute)continue;
         const selected=activeRoad===pair.id,dim=activeRoad&&!selected;
-        const lines=result.googleRoute.createPolylines({polylineOptions:{strokeColor:pair.color,strokeOpacity:dim?.18:.85,strokeWeight:selected?6:4,zIndex:selected?20:5}});
+        const lines=result.googleRoute.createPolylines({polylineOptions:defaults=>({...defaults,...(result.travelMode==='TRANSIT'?{}:{strokeColor:pair.color}),strokeOpacity:dim?.18:defaults.strokeOpacity??.85,strokeWeight:selected?6:defaults.strokeWeight??4,zIndex:selected?20:5})});
         for(const line of lines){line.setMap(this.map);line.addListener('click',()=>this.callbacks.onRoad(pair.id));}
         this.paths.set(pair.id,lines);
       }

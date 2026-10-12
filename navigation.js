@@ -2,6 +2,8 @@
   'use strict';
   const colors=['#2878b8','#bc6d20','#238c78','#8259a9','#b64e76','#527fa6','#75843c','#8b6550'];
   const islandIds=new Set(['saikaew','aophai','nadan']);
+  const drivingIds=new Set(['airport','banphe']);
+  const travelMode=(origin,destination)=>drivingIds.has(origin.id)||drivingIds.has(destination.id)||islandIds.has(origin.id)||islandIds.has(destination.id)?'DRIVING':'TRANSIT';
   function uniquePlaces(days,places) {
     const result=new Map();
     for(const day of days) for(const id of day.stops) if(!result.has(id)) result.set(id,{...places[id],color:day.color});
@@ -15,10 +17,11 @@
       origin:center.point,destination,
       name:center.type==='home'?destination.name:destination.letter+' · '+destination.short,
       color:center.type==='home'?destination.color || '#2878b8':colors[index%colors.length],
+      travelMode:travelMode(center.point,destination),
       requiresBoat:islandIds.has(center.point.id)||islandIds.has(destination.id)
     }));
   }
-  function directions(origin,destination,mode='DRIVING') {
+  function directions(origin,destination,mode=travelMode(origin,destination)) {
     const url=new URL('https://www.google.com/maps/dir/');
     url.searchParams.set('api','1');
     url.searchParams.set('origin',origin.lat+','+origin.lng);
@@ -45,5 +48,5 @@
     }).catch(error=>{files.delete(name);throw error;}));
     return files.get(name);
   }
-  window.TripNavigation={uniquePlaces,plan,directions,decodePolyline,loadRoutes};
+  window.TripNavigation={uniquePlaces,plan,directions,travelMode,decodePolyline,loadRoutes};
 })();

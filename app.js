@@ -9,6 +9,11 @@
   const routeDetails = document.getElementById('route-details');
   const locationAnalysis = document.getElementById('location-analysis');
   const navigationPanel = document.getElementById('navigation-panel');
+  const routeSettings=document.getElementById('route-settings');
+  const departureInput=document.getElementById('departure-time');
+  let departureLocal='2026-12-13T10:00';
+  departureInput.value=departureLocal;
+  const departureTime=()=>new Date(departureLocal+':00+07:00');
   const navigation = window.TripNavigation;
   const mapsConfig=window.TRIP_MAPS_CONFIG||{};
   const useGoogle=Boolean(mapsConfig.googleApiKey&&mapsConfig.mapId);
@@ -52,7 +57,7 @@
   const roadCenter = () => selectedPlace ? {type:'place',point:selectedPlace} : selectedHome ? {type:'home',point:selectedHome} : null;
   const roadPairs = () => navigation.plan(roadCenter(),data.homes,visiblePlaces());
   const roadPath = result => result.path || navigation.decodePolyline(result.geometry);
-  function roadResult(pair) {return pair.requiresBoat?{status:'boat'}:roadData?.routes[pair.destination.id] || {status:roadError?'unavailable':'loading'};}
+  function roadResult(pair) {return pair.requiresBoat?{status:'boat'}:!useGoogle&&pair.travelMode==='TRANSIT'?{status:'unavailable'}:roadData?.routes[pair.destination.id] || {status:roadError?'unavailable':'loading'};}
   function drawRoads() {
     roadLayers.clearLayers();
     if(useGoogle) {if(googleMap.map) googleMap.drawPaths(roadPairs(),roadResult,showRoutes,activeRoad);return;}
@@ -80,26 +85,45 @@
   function renderNavigation() {
     navigationPanel.replaceChildren();
     const center=roadCenter();navigationPanel.hidden=!center || mapMode==='google';
+    const pairs=roadPairs();
+    routeSettings.hidden=navigationPanel.hidden||!useGoogle||!pairs.some(pair=>!pair.requiresBoat&&pair.travelMode==='TRANSIT');
     if(!center) return;
     const heading=el('div','navigation-heading');
-    heading.append(el('h2','',center.type==='home'?center.point.short+' → 景點':center.point.name+' → 房源'),el('span','',useGoogle&&mapsConfig.trafficAware?'開車・目前路況':'開車・不含即時路況'));
+    const modes=new Set(pairs.filter(pair=>!pair.requiresBoat).map(pair=>pair.travelMode));
+    const modeLabel=modes.size>1?'大眾交通／開車':modes.has('TRANSIT')?'大眾交通':modes.has('DRIVING')?'開車':'船班接駁';
+    heading.append(el('h2','',center.type==='home'?center.point.short+' → 景點':center.point.name+' → 房源'),el('span','',modeLabel));
     const meta=el('p','navigation-meta',(useGoogle?'Google Maps':'OSRM / OpenStreetMap・2026/10/12')+(center.type==='home'&&center.point.locationType==='approximate'?'・房源約略位置':center.type==='place'?'・部分房源為約略位置':''));
     const grid=el('div','road-grid');
-    for(const pair of roadPairs()) {
+    for(const pair of pairs) {
       const result=roadResult(pair),tile=el('div','road-tile');tile.style.setProperty('--road-color',pair.color);
+      tile.dataset.mode=pair.travelMode;
       tile.classList.toggle('selected-road',activeRoad===pair.id);
       const target=el('button','road-target',pair.name);target.type='button';target.setAttribute('aria-label','以 '+pair.name+' 為起點');
       target.addEventListener('click',()=>center.type==='home'?focusPlace(pair.destination):focusHome(pair.destination));
       const button=el('button','road-focus');button.type='button';button.dataset.road=pair.id;button.disabled=result.status!=='ready';button.setAttribute('aria-pressed',String(activeRoad===pair.id));
       button.setAttribute('aria-label','聚焦至 '+pair.name+' 的路線');
       if(result.status==='ready') {
+        button.append(el('span','road-mode',pair.travelMode==='TRANSIT'?(result.transit?.lines.length?'大眾交通':'步行'):(mapsConfig.trafficAware?'開車・目前路況':'開車・不含即時路況')));
         const metrics=el('div','road-metrics');
-        metrics.append(el('span','road-km',(result.distanceMeters/1000).toFixed(1)+' km'),el('span','road-time','約 '+Math.max(1,Math.round(result.durationSeconds/60))+' 分'));
+        const km=el('span','road-km',(result.distanceMeters/1000).toFixed(1)+' km'),time=el('span','road-time','約 '+Math.max(1,Math.round(result.durationSeconds/60))+' 分');
+        metrics.append(...(pair.travelMode==='TRANSIT'?[time,km]:[km,time]));
         button.append(metrics);
-      } else button.append(el('span','road-status',result.status==='boat'?'需船班接駁':result.status==='loading'?'載入中':'路線未取得'));
+        if(result.transit) {
+          if(result.transit.lines.length)button.append(el('span','transit-lines',result.transit.lines.join(' → ')));
+          button.append(el('span','transit-meta','步行 '+(result.transit.walkingMeters/1000).toFixed(1)+' km'+(result.transit.lines.length?' · '+result.transit.transfers+' 次轉乘':'')));
+        }
+      } else button.append(el('span','road-status',result.status==='boat'?'需船班接駁':result.status==='loading'?'載入中':pair.travelMode==='TRANSIT'?'大眾交通路線未取得':'開車路線未取得'));
       button.addEventListener('click',()=>selectRoad(pair.id));
-      const google=link('Google 導航 ↗',navigation.directions(pair.origin,pair.destination),'road-google');
+      const google=link(pair.requiresBoat?'Google 地圖 ↗':'Google 導航 ↗',pair.requiresBoat?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(pair.destination.lat+','+pair.destination.lng):navigation.directions(pair.origin,pair.destination,pair.travelMode),'road-google');
       tile.append(target,button,google);grid.append(tile);
+      if(result.transit?.steps.length) {
+        const details=el('details','transit-details'),summary=el('summary','','搭乘路線'),steps=el('ol','transit-steps');
+        for(const step of result.transit.steps) {
+          if(step.mode==='WALKING')steps.append(el('li','','步行 '+Math.round(step.distanceMeters)+' m'+(step.durationSeconds?' · 約 '+Math.max(1,Math.round(step.durationSeconds/60))+' 分':'')));
+          else {const item=el('li','',''+(step.line||'大眾交通')+' · '+step.from+' → '+step.to);for(const agency of step.agencies)if(agency.name&&agency.url)item.append(link(agency.name,agency.url,'transit-agency'));steps.append(item);}
+        }
+        details.append(summary,steps);tile.append(details);
+      }
       if(result.warnings?.length) tile.append(el('p','route-warning',result.warnings.join(' ')));
     }
     navigationPanel.append(heading,meta,grid);
@@ -114,7 +138,7 @@
         await googleMap.compute(center,roadPairs(),(pair,result)=>{
           if(generation!==roadGeneration)return;
           roadData.routes[pair.destination.id]=result;renderNavigation();drawRoads();
-        });
+        },{departureTime:departureTime()});
       } catch(error) {if(generation!==roadGeneration)return;roadError=true;renderNavigation();}
       if(generation===roadGeneration && mapMode==='routes') updateMap();
       return;
@@ -256,6 +280,7 @@
   }
   function selectDay(id) {
     activeDay = id;
+    if(/^d1[2-6]$/.test(id)) {departureLocal='2026-12-'+id.slice(1)+departureLocal.slice(10);departureInput.value=departureLocal;}
     selectedArea=null;
     activeRoad=null;
     if(selectedPlace && !visiblePlaces().some(p=>p.id===selectedPlace.id)) {selectedPlace=null;mapLabel.textContent='全部 8 間住宿';}
@@ -397,6 +422,12 @@
     card.append(summary,detail);list.append(card);
   }
   document.getElementById('show-all').addEventListener('click',()=>showMap());
+  document.getElementById('update-departure').addEventListener('click',()=>{
+    const error=document.getElementById('departure-error');
+    const next=departureInput.value.slice(0,16),date=new Date(next+':00+07:00'),now=Date.now();
+    if(!departureInput.reportValidity()||!Number.isFinite(date.getTime())||date.getTime()<now-7*86400000||date.getTime()>now+100*86400000) {error.textContent='出發時間需在前 7 天至後 100 天內';error.hidden=false;return;}
+    error.hidden=true;departureLocal=next;updateNavigation();
+  });
   document.getElementById('home-closeup').addEventListener('click',()=>updateMap(true));
   document.getElementById('fit-route').addEventListener('click',()=>{selectedArea=null;activeRoad=null;renderRoute();renderNavigation();updateMap();});
   document.getElementById('toggle-routes').addEventListener('click',event=>{showRoutes=!showRoutes;event.currentTarget.setAttribute('aria-pressed',String(showRoutes));drawRoads();});
