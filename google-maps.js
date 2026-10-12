@@ -57,7 +57,7 @@
             const response=await this.Route.computeRoutes({origin:position(pair.origin),destination:position(pair.destination),travelMode:'DRIVING',routingPreference:this.config.trafficAware?'TRAFFIC_AWARE':'TRAFFIC_UNAWARE',region:'th',fields:['path','distanceMeters','durationMillis','warnings']});
             const route=response.routes?.[0];
             result=route?.path?.length&&Number.isFinite(route.distanceMeters)&&Number.isFinite(route.durationMillis)?{status:'ready',distanceMeters:route.distanceMeters,durationSeconds:route.durationMillis/1000,path:route.path.map(point=>{const p=position(point);return [p.lat,p.lng];}),warnings:route.warnings||[],googleRoute:route}:{status:'unavailable'};
-          } catch(error) {result={status:'unavailable'};}
+          } catch(error) {console.warn('Google Routes: '+(error?.message||'route request failed'));result={status:'unavailable'};}
           if(generation!==this.generation) return;
           if(result.status==='ready') this.routes.set(pair.id,result);onResult(pair,result);
         }

@@ -25,7 +25,7 @@
   let mapMode = 'routes';
   const reducedMotion = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const routeMap = L.map('route-map',{center:[13.74,100.56],zoom:12,scrollWheelZoom:true,minZoom:6,maxZoom:19,zoomSnap:.5,zoomControl:false});
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(routeMap);
+  if(!useGoogle) L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(routeMap);
   L.control.zoom({position:'bottomright'}).addTo(routeMap);
   L.control.scale({imperial:false,position:'bottomleft'}).addTo(routeMap);
   routeMap.createPane('activityAreas'); routeMap.getPane('activityAreas').style.zIndex=250;
