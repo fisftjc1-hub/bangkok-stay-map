@@ -62,7 +62,7 @@
         const marker=L.marker([place.lat,place.lng],{icon:L.divIcon({className:'place-icon',html:badge,iconSize:[23,23],iconAnchor:[11.5,11.5]}),title:place.name,zIndexOffset:400});
         const popup=el('div','place-popup'); popup.append(el('strong','',place.name),link('Google 地圖 ↗',place.google));
         if(selectedHome) popup.append(link('從 '+selectedHome.short+' 出發 ↗',directions(place)));
-        marker.bindPopup(popup).bindTooltip(place.name,{permanent:activeDay==='d15',direction:'top',offset:[0,-11]}).addTo(movementLayers);
+        marker.bindPopup(popup).bindTooltip(place.name,{permanent:false,direction:'top',offset:[0,-11]}).addTo(movementLayers);
       }
     }
   }
