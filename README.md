@@ -2,12 +2,14 @@
 
 Public comparison of eight Bangkok group accommodation options for 13–16 December 2026, 15 adults and three nights.
 
-The static site includes an interactive itinerary map and the public Google My Maps accommodation view. It requires no API key, backend, or build step. Publish the repository's main branch root using GitHub Pages.
+The static site includes an interactive itinerary map and the public Google My Maps accommodation view. The OpenStreetMap/OSRM mode needs no API key. The Google Maps mode uses Maps JavaScript API + Routes API with a browser key and map ID in `maps-config.js`; it activates only when both are set. No backend or build step is needed. Publish the repository's main branch root using GitHub Pages.
 
 ## Files
 
 - `index.html`, `styles.css`, `app.js`: responsive comparison page.
 - `navigation.js`: directed origin/destination planning, encoded-road geometry decoding, and route-file loading.
+- `google-maps.js`, `maps-config.js`: Google Maps renderer and Routes API adapter. Configuration is blank until the account, billing and restricted browser key are ready.
+- `terms.html`, `privacy.html`: public service terms and privacy information linked when Google Maps is enabled.
 - `roads/`: precomputed OSRM driving paths for each home and each mainland itinerary point, with distance, duration, and snapped endpoints.
 - `data.js`: sourced property information and the Google My Maps ID.
 - `itinerary.js`: daily suggested stop order, approximate activity areas, sourced coordinates, and BKK departure.
@@ -21,7 +23,11 @@ To update positions, update `data.js` and the corresponding Google My Maps marke
 
 Click a home to show separate driving routes from that home to the visible itinerary points. Click a POI marker or its name to show routes from that POI to all eight homes. Route directions are computed separately so one-way streets can change the return route. Click a distance/time card or line to focus a single route; click its destination name to change the origin. Day filters limit POI destinations; Full Journey includes Ban Phe. The route toggle hides road paths without hiding places or areas.
 
-The user selected the option without a Google Cloud billing account. Displayed road paths use OSRM / OpenStreetMap, not Google routing. Each route also links to Google Maps with the same directed endpoints. Paths were fetched on 12 October 2026 at no more than one request per second and served as static files, so visitors make no requests to the public OSRM demo service. Durations are model estimates without live traffic; Airbnb endpoints are approximate public positions and not verified entrances. No straight-line fallback is drawn for a missing route. Koh Samet beach and island-pier connections are marked as needing boat transfers rather than represented as continuous driving routes.
+With blank Google configuration, displayed road paths use OSRM / OpenStreetMap. Each route also links to Google Maps with the same directed endpoints. OSRM paths were fetched on 12 October 2026 at no more than one request per second and served as static files, so visitors make no requests to the public OSRM demo service. Durations are model estimates without live traffic; Airbnb endpoints are approximate public positions and not verified entrances. No straight-line fallback is drawn for a missing route. Koh Samet beach and island-pier connections are marked as needing boat transfers rather than represented as continuous driving routes.
+
+When Google configuration is enabled, all interactive markers, activity polygons and routes are rendered on a Google map. Routes are computed independently in the selected direction with at most two outstanding requests. Changing the origin abandons queued work and prevents stale results from painting. Results are held only for the current origin/display; no Google route payload is exported, stored in local storage, or written to the static road files. Date filters reuse the current origin's results, requesting only missing destinations. `trafficAware` defaults to false (basic driving requests); setting it true uses traffic-aware route computation and changes the billing SKU. Route warnings returned by Google are displayed with their route.
+
+Before activation, enable Maps JavaScript API and Routes API on the chosen Cloud project, create a JavaScript map ID, and restrict the browser key to `https://fisftjc1-hub.github.io/bangkok-stay-map/*` and those two APIs. Use a separate key or referrer entry for any local testing. Apply appropriate provider quotas and monitor billing; budget alerts alone are not spending caps. Do not publish unrestricted keys or other credentials. Actual provider validation remains pending until the user completes Google Cloud first-use terms/billing and supplies the restricted configuration.
 
 Activity polygons are approximate planning areas rather than walking isochrones. Distances to their boundaries remain explicitly labelled as straight-line distances. The 12/14 map uses plan A; massage and rooftop venues on 12/15 remain unspecified. Big C uses the Ratchadamri branch. Airport selection is Suvarnabhumi BKK, confirmed by the user; the source itinerary's 10:30 airport departure is displayed with the shopping schedule flagged for adjustment.
 
