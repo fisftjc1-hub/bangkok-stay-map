@@ -1,0 +1,8 @@
+{
+  "generated": "2026-10-12",
+  "provider": "OSRM / OpenStreetMap",
+  "profile": "driving",
+  "geometryPrecision": 6,
+  "routes": 272,
+  "errors": []
+}

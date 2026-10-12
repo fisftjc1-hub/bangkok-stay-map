@@ -124,10 +124,10 @@ window.ITINERARY_DATA = {
     "airport": {
       "id": "airport",
       "name": "蘇凡納布 BKK",
-      "lat": 13.6818969,
-      "lng": 100.7468694,
-      "source": "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi%20Airport",
-      "google": "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi%20Airport"
+      "lat": 13.6916193,
+      "lng": 100.7510841,
+      "source": "https://www.openstreetmap.org/way/26071844",
+      "google": "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi%20Airport%20Terminal"
     },
     "saikaew": {
       "id": "saikaew",

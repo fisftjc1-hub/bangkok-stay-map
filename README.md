@@ -7,6 +7,8 @@ The static site includes an interactive itinerary map and the public Google My M
 ## Files
 
 - `index.html`, `styles.css`, `app.js`: responsive comparison page.
+- `navigation.js`: directed origin/destination planning, encoded-road geometry decoding, and route-file loading.
+- `roads/`: precomputed OSRM driving paths for each home and each mainland itinerary point, with distance, duration, and snapped endpoints.
 - `data.js`: sourced property information and the Google My Maps ID.
 - `itinerary.js`: daily suggested stop order, approximate activity areas, sourced coordinates, and BKK departure.
 - `vendor/leaflet.js`, `vendor/leaflet.css`: Leaflet 1.9.4, locally hosted. Basemap tiles are from OpenStreetMap with visible attribution.
@@ -17,12 +19,20 @@ Airbnb coordinates are public approximate map positions, not confirmed entrance 
 
 To update positions, update `data.js` and the corresponding Google My Maps markers together. Do not publish private booking confirmations, personal contact information, or credentials in this repository.
 
-Itinerary lines show suggested movement between stops, not road geometry. Distances are great-circle distances from public property positions. Google directions links provide road/transit planning separately. Activity polygons are approximate planning areas rather than walking isochrones. The 12/14 map uses plan A; massage and rooftop venues on 12/15 remain unspecified. Big C uses the Ratchadamri branch. Airport selection is Suvarnabhumi BKK, confirmed by the user; the source itinerary's 10:30 airport departure is displayed with the shopping schedule flagged for adjustment.
+Click a home to show separate driving routes from that home to the visible itinerary points. Click a POI marker or its name to show routes from that POI to all eight homes. Route directions are computed separately so one-way streets can change the return route. Click a distance/time card or line to focus a single route; click its destination name to change the origin. Day filters limit POI destinations; Full Journey includes Ban Phe. The route toggle hides road paths without hiding places or areas.
+
+The user selected the option without a Google Cloud billing account. Displayed road paths use OSRM / OpenStreetMap, not Google routing. Each route also links to Google Maps with the same directed endpoints. Paths were fetched on 12 October 2026 at no more than one request per second and served as static files, so visitors make no requests to the public OSRM demo service. Durations are model estimates without live traffic; Airbnb endpoints are approximate public positions and not verified entrances. No straight-line fallback is drawn for a missing route. Koh Samet beach and island-pier connections are marked as needing boat transfers rather than represented as continuous driving routes.
+
+Activity polygons are approximate planning areas rather than walking isochrones. Distances to their boundaries remain explicitly labelled as straight-line distances. The 12/14 map uses plan A; massage and rooftop venues on 12/15 remain unspecified. Big C uses the Ratchadamri branch. Airport selection is Suvarnabhumi BKK, confirmed by the user; the source itinerary's 10:30 airport departure is displayed with the shopping schedule flagged for adjustment.
 
 POI positions were checked on 12 October 2026 using OpenStreetMap geocoding, the restaurant's official map link, and Google Maps. The geocoder's Mega Bangna result pointed to another business and was rejected; the mall uses OSM way 175552840.
 
+The original broad BKK marker did not snap to a public road within 300 metres. For driving navigation, BKK now uses the verified main passenger terminal, OSM way 26071844, at 13.6916193, 100.7510841. The calculated terminal endpoint snaps about 153 metres to the access-road network.
+
 Mouse-wheel zoom is enabled. The default Bangkok overview retains a useful accommodation comparison scale; Full Journey includes the first day on Koh Samet and a conditional 13 December return to Bangkok. The 12 December view fits Ban Phe and the island without pulling the map back to Bangkok. Clicking a Bangkok property while viewing 12 December returns to the Bangkok overview.
 
-Activity areas are selectable individually and deduplicated between days. Each area lists its itinerary stops; with a property selected, the card shows whether its public marker is inside or its approximate straight-line distance to the area boundary. These planning boundaries do not measure walking time or travel time. The movement-line toggle keeps areas and places visible.
+Activity areas are selectable individually and deduplicated between days. Each area lists its itinerary stops; with a property selected, the card shows whether its public marker is inside or its approximate straight-line distance to the area boundary. These planning boundaries do not measure walking time or travel time.
 
-Koh Samet positions use OSM beach way 96477683, Ao Phai node 617547920, Na Dan pier way 27622262, and Ban Phe node 2078709709. The initial Sai Kaew search returned a resort rather than the beach and was rejected. Na Dan is a transfer reference, not a confirmed boat booking. The original itinerary leaves the 12 December overnight location undecided; the return line is conditional on staying on the island. Boat services and the exact Ban Phe departure pier remain undecided. Reference: https://www.samedresorts.com/transportation.html
+Koh Samet positions use OSM beach way 96477683, Ao Phai node 617547920, Na Dan pier way 27622262, and Ban Phe node 2078709709. The initial Sai Kaew search returned a resort rather than the beach and was rejected. Na Dan is a transfer reference, not a confirmed boat booking. The original itinerary leaves the 12 December overnight location undecided; the return-transfer summary is conditional on staying on the island. Boat services and the exact Ban Phe departure pier remain undecided. Reference: https://www.samedresorts.com/transportation.html
+
+Routing documentation and demo-server policy: https://project-osrm.org/docs/v5.24.0/api/ and https://github.com/Project-OSRM/osrm-backend/wiki/Demo-server . Road data uses OpenStreetMap; visible map attribution links to its copyright/licence information.

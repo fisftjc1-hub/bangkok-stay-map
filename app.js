@@ -8,7 +8,14 @@
   const dayTabs = document.getElementById('day-tabs');
   const routeDetails = document.getElementById('route-details');
   const locationAnalysis = document.getElementById('location-analysis');
+  const navigationPanel = document.getElementById('navigation-panel');
+  const navigation = window.TripNavigation;
   let selectedHome = null;
+  let selectedPlace = null;
+  let activeRoad = null;
+  let roadData = null;
+  let roadError = false;
+  let roadGeneration = 0;
   let activeDay = 'all';
   let selectedArea = null;
   let showRoutes = true;
@@ -21,6 +28,7 @@
   routeMap.createPane('activityAreas'); routeMap.getPane('activityAreas').style.zIndex=250;
   routeMap.createPane('movementLines'); routeMap.getPane('movementLines').style.zIndex=350;
   const homeLayers=L.layerGroup().addTo(routeMap), movementLayers=L.layerGroup().addTo(routeMap);
+  const roadLayers=L.layerGroup().addTo(routeMap);
   let areaPolygons=[];
   const fmt = new Intl.NumberFormat('zh-TW');
   const money = n => 'NT$' + fmt.format(n);
@@ -37,6 +45,75 @@
   }
   const isOverview = () => ['all','journey'].includes(activeDay);
   const visibleDays = () => itinerary.days.filter(day => activeDay === 'journey' || activeDay === 'all' && day.scope !== 'samet' || day.id === activeDay);
+  const visiblePlaces = () => navigation.uniquePlaces(visibleDays(),itinerary.places);
+  const roadCenter = () => selectedPlace ? {type:'place',point:selectedPlace} : selectedHome ? {type:'home',point:selectedHome} : null;
+  const roadPairs = () => navigation.plan(roadCenter(),data.homes,visiblePlaces());
+  function roadResult(pair) {return pair.requiresBoat?{status:'boat'}:roadData?.routes[pair.destination.id] || {status:roadError?'unavailable':'loading'};}
+  function drawRoads() {
+    roadLayers.clearLayers();
+    if(!showRoutes) return;
+    for(const pair of roadPairs()) {
+      const result=roadResult(pair);if(result.status!=='ready') continue;
+      const path=navigation.decodePolyline(result.geometry);
+      const selected=activeRoad===pair.id,dim=activeRoad && !selected;
+      L.polyline(path,{pane:'movementLines',color:'#fff',weight:selected?8:6,opacity:dim?.25:.7,interactive:false}).addTo(roadLayers);
+      const line=L.polyline(path,{pane:'movementLines',color:pair.color,weight:selected?5:3.5,opacity:dim?.2:.8,className:'road-route'+(selected?' active-road':'')});
+      const tooltip=el('div','road-tooltip');tooltip.append(el('strong','',pair.origin.short || pair.origin.name),el('span','',' → '+pair.name+' · '+(result.distanceMeters/1000).toFixed(1)+' km'));
+      line.bindTooltip(tooltip,{sticky:true}).on('click',()=>selectRoad(pair.id)).addTo(roadLayers);
+      if(selected) line.bringToFront();
+    }
+  }
+  function selectRoad(id) {
+    activeRoad=id;renderNavigation();drawRoads();
+    const pair=roadPairs().find(p=>p.id===id),result=pair && roadResult(pair);
+    if(result?.status==='ready') routeMap.flyToBounds(L.latLngBounds(navigation.decodePolyline(result.geometry)),{padding:[40,40],maxZoom:15,animate:!reducedMotion,duration:.6});
+    scrollToMap();
+  }
+  function renderNavigation() {
+    navigationPanel.replaceChildren();
+    const center=roadCenter();navigationPanel.hidden=!center || mapMode==='google';
+    if(!center) return;
+    const heading=el('div','navigation-heading');
+    heading.append(el('h2','',center.type==='home'?center.point.short+' → 景點':center.point.name+' → 房源'),el('span','','開車・不含即時路況'));
+    const meta=el('p','navigation-meta','OSRM / OpenStreetMap・2026/10/12'+(center.type==='home'&&center.point.locationType==='approximate'?'・房源約略位置':center.type==='place'?'・部分房源為約略位置':''));
+    const grid=el('div','road-grid');
+    for(const pair of roadPairs()) {
+      const result=roadResult(pair),tile=el('div','road-tile');tile.style.setProperty('--road-color',pair.color);
+      tile.classList.toggle('selected-road',activeRoad===pair.id);
+      const target=el('button','road-target',pair.name);target.type='button';target.setAttribute('aria-label','以 '+pair.name+' 為起點');
+      target.addEventListener('click',()=>center.type==='home'?focusPlace(pair.destination):focusHome(pair.destination));
+      const button=el('button','road-focus');button.type='button';button.dataset.road=pair.id;button.disabled=result.status!=='ready';button.setAttribute('aria-pressed',String(activeRoad===pair.id));
+      button.setAttribute('aria-label','聚焦至 '+pair.name+' 的路線');
+      if(result.status==='ready') {
+        const metrics=el('div','road-metrics');
+        metrics.append(el('span','road-km',(result.distanceMeters/1000).toFixed(1)+' km'),el('span','road-time','約 '+Math.max(1,Math.round(result.durationSeconds/60))+' 分'));
+        button.append(metrics);
+      } else button.append(el('span','road-status',result.status==='boat'?'需船班接駁':result.status==='loading'?'載入中':'路線未取得'));
+      button.addEventListener('click',()=>selectRoad(pair.id));
+      const google=link('Google 導航 ↗',navigation.directions(pair.origin,pair.destination),'road-google');
+      tile.append(target,button,google);grid.append(tile);
+    }
+    navigationPanel.append(heading,meta,grid);
+  }
+  async function updateNavigation() {
+    const center=roadCenter(),generation=++roadGeneration;
+    activeRoad=null;roadData=null;roadError=false;renderNavigation();drawRoads();
+    if(!center) return;
+    try {
+      const result=await navigation.loadRoutes(center);
+      if(generation!==roadGeneration) return;
+      roadData=result;
+    } catch(error) {if(generation!==roadGeneration)return;roadError=true;}
+    renderNavigation();drawRoads();
+    if(mapMode==='routes') updateMap();
+  }
+  function focusPlace(place) {
+    selectedPlace=place;selectedHome=null;selectedArea=null;
+    mapLabel.textContent=place.name+' → 8 間房源';
+    document.getElementById('home-closeup').hidden=true;
+    for(const card of list.querySelectorAll('.stay-card')) {card.classList.remove('is-selected');card.querySelector('summary').removeAttribute('aria-current');}
+    renderRoute();renderAnalysis();updateNavigation();updateMap();scrollToMap();
+  }
   function visibleAreas() {
     const areas = new Map();
     for (const day of visibleDays()) for (const area of day.areas) {
@@ -98,27 +175,18 @@
     }
     for (const day of visibleDays()) {
       const route=day.stops.map(id=>itinerary.places[id]);
-      if(showRoutes) for(const segment of day.segments || [{stops:day.stops,mode:'local'}]) {
-        const options={pane:'movementLines',color:day.color,weight:3,opacity:isOverview()?.7:1,className:isOverview()?'route-line':'route-line route-active'};
-        if(segment.mode==='boat') { options.dashArray='4 8'; options.className='route-line boat-line'; }
-        L.polyline(segment.stops.map(id=>[itinerary.places[id].lat,itinerary.places[id].lng]),options).addTo(movementLayers);
-      }
       for (const [index,place] of route.entries()) {
         if (drawnPlaces.has(place.id)) continue;
         drawnPlaces.add(place.id);
-        const badge=el('span','place-pin',isOverview()?'':String(index+1)); badge.style.background=day.color;
+        const chosen=selectedPlace?.id===place.id;
+        const badge=el('span','place-pin'+(chosen?' selected-place':''),isOverview()?'':String(index+1)); badge.style.background=day.color;
         const marker=L.marker([place.lat,place.lng],{icon:L.divIcon({className:'place-icon',html:badge,iconSize:[23,23],iconAnchor:[11.5,11.5]}),title:place.name,zIndexOffset:400});
-        const popup=el('div','place-popup'); popup.append(el('strong','',place.name),link('Google 地圖 ↗',place.google));
-        if(selectedHome && day.scope!=='samet') popup.append(link('從 '+selectedHome.short+' 出發 ↗',directions(place)));
-        marker.bindPopup(popup).bindTooltip(place.name,{permanent:false,direction:'top',offset:[0,-11]}).addTo(movementLayers);
+        marker.on('click',()=>focusPlace(place));
+        marker.bindTooltip(place.name,{permanent:chosen,interactive:true,direction:'top',offset:[0,-11]}).addTo(movementLayers);
+        marker.getTooltip().on('click',()=>focusPlace(place));
       }
     }
-    if(activeDay==='journey' && showRoutes) {
-      const transfer=itinerary.transfer;
-      const destination=selectedHome || itinerary.places.asok;
-      const points=[itinerary.places.nadan,itinerary.places.banphe,destination];
-      L.polyline(points.map(p=>[p.lat,p.lng]),{pane:'movementLines',color:transfer.color,weight:2.5,dashArray:'6 8',className:'transfer-line'}).bindTooltip('12/13 返曼谷（島上過夜時）').addTo(movementLayers);
-    }
+    drawRoads();
     updateAreaLabels();
   }
   function camera(points) {
@@ -133,13 +201,18 @@
     return {lat, lng: (west + east) * 180 - 180, zoom: Math.max(6, zoom)};
   }
   function updateMap(closeup = false, place = null, area = null) {
-    const localSamet=activeDay==='d12' || area?.scope==='samet';
+    const localSamet=(activeDay==='d12' || area?.scope==='samet') && !selectedPlace;
     const points = localSamet && mapMode==='routes' ? [] : selectedHome ? [selectedHome] : [...data.homes];
-    for (const day of area ? [] : visibleDays()) {
+    if(selectedPlace) points.push(selectedPlace);
+    for (const day of area || selectedPlace ? [] : visibleDays()) {
       points.push(...day.stops.map(id => itinerary.places[id]));
       for (const area of day.areas) points.push(...area.coordinates.map(([lng,lat]) => ({lat,lng})));
     }
     if(area) points.push(...area.coordinates.map(([lng,lat])=>({lat,lng})));
+    if(!area && showRoutes) for(const pair of roadPairs()) {
+      const result=roadResult(pair);
+      if(result.status==='ready') points.push(...navigation.decodePolyline(result.geometry).map(([lat,lng])=>({lat,lng})));
+    }
     if (mapMode==='google') { points.length=0; points.push(...(selectedHome?[selectedHome]:data.homes)); }
     const view = place ? {lat:place.lat,lng:place.lng,zoom:16} : closeup && selectedHome ? {...selectedHome,zoom:15} : camera(points);
     const mapId = itinerary.maps[activeDay] || itinerary.maps.all;
@@ -158,20 +231,14 @@
     viewer.searchParams.set('mid',mapId);
     document.getElementById('open-google').href = viewer.href;
   }
-  function directions(place) {
-    const url = new URL('https://www.google.com/maps/dir/');
-    url.searchParams.set('api','1');
-    url.searchParams.set('origin',selectedHome.lat+','+selectedHome.lng);
-    url.searchParams.set('destination',place.id === 'airport' ? 'Suvarnabhumi Airport Departures' : new URL(place.google).searchParams.get('query') || place.name+', Bangkok');
-    url.searchParams.set('travelmode','driving');
-    return url.href;
-  }
   function selectDay(id) {
     activeDay = id;
     selectedArea=null;
+    activeRoad=null;
+    if(selectedPlace && !visiblePlaces().some(p=>p.id===selectedPlace.id)) {selectedPlace=null;mapLabel.textContent='全部 8 間住宿';}
     document.querySelector('.map-key').style.setProperty('--route-color',isOverview()?'#2878b8':visibleDays()[0].color);
     for (const button of dayTabs.querySelectorAll('button')) button.setAttribute('aria-pressed',String(button.dataset.day === id));
-    renderRoute(); renderAnalysis(); updateMap();
+    renderRoute(); renderAnalysis(); renderNavigation();updateMap();
   }
   function renderRoute() {
     routeDetails.replaceChildren();
@@ -183,6 +250,14 @@
         button.addEventListener('click',()=>selectDay(day.id)); grid.append(button);
       }
       routeDetails.append(grid);
+      const places=el('div','overview-places');
+      places.append(el('h3','','景點'));
+      const buttons=el('div','place-buttons');
+      for(const place of visiblePlaces()) {
+        const button=el('button','stop-button',place.name);button.type='button';button.dataset.place=place.id;
+        button.setAttribute('aria-pressed',String(selectedPlace?.id===place.id));button.addEventListener('click',()=>focusPlace(place));buttons.append(button);
+      }
+      places.append(buttons);routeDetails.append(places);
       if(activeDay==='journey') {
         const transfer=el('div','transfer-summary');
         transfer.append(el('strong','','12/13 返曼谷'),el('span','','沙美島 → Ban Phe → '+(selectedHome?selectedHome.short:'Asok／Phrom Phong')));
@@ -199,7 +274,7 @@
       const place = itinerary.places[id], item=el('li');
       const button=el('button','stop-button'); button.type='button';
       button.append(el('span','stop-number',String(index+1)),el('span','',place.name));
-      button.addEventListener('click',()=>{updateMap(false,place);scrollToMap();});
+      button.addEventListener('click',()=>focusPlace(place));
       item.append(button); stops.append(item);
     }
     routeDetails.append(stops,el('p','day-analysis',day.analysis),el('p','day-note',day.note));
@@ -225,22 +300,11 @@
     routeDetails.append(heading,grid);
   }
   function renderAnalysis() {
-    locationAnalysis.replaceChildren(); locationAnalysis.hidden = !selectedHome || mapMode==='google' || activeDay==='d12';
-    if (!selectedHome || activeDay==='d12') return;
-    const heading=el('div','analysis-heading');
-    heading.append(el('h2','','房源至活動點'),el('span','',selectedHome.locationType==='approximate'?'直線距離・住宿約略位置':'直線距離'));
-    const hubIds = isOverview() ? itinerary.analysisHubs : visibleDays()[0].stops.filter(id=>!['emerald','watpho','watarun','erawan','central','bigc'].includes(id));
-    const grid=el('div','distance-grid');
-    for (const id of hubIds) {
-      const place=itinerary.places[id], km=distance(selectedHome,place);
-      const tile=link('',directions(place),'distance-tile');
-      tile.append(el('span','distance-label',place.name),el('strong','distance-value',km.toFixed(1)+' km'),el('span','distance-nav','Google 路線 ↗'));
-      grid.append(tile);
-    }
-    locationAnalysis.append(heading,grid);
+    locationAnalysis.replaceChildren();locationAnalysis.hidden=true;
   }
   function showMap(home) {
     selectedHome = home || null;
+    selectedPlace=null;
     selectedArea=null;
     mapLabel.textContent = selectedHome ? home.letter + ' · ' + home.short : '全部 8 間住宿';
     document.getElementById('home-closeup').hidden = !selectedHome;
@@ -251,7 +315,7 @@
       if (selected) summary.setAttribute('aria-current', 'true');
       else summary.removeAttribute('aria-current');
     }
-    renderRoute(); renderAnalysis(); updateMap();
+    renderRoute(); renderAnalysis(); updateNavigation();updateMap();
   }
   function focusHome(home) {
     if(activeDay==='d12') selectDay('all');
@@ -310,8 +374,8 @@
   }
   document.getElementById('show-all').addEventListener('click',()=>showMap());
   document.getElementById('home-closeup').addEventListener('click',()=>updateMap(true));
-  document.getElementById('fit-route').addEventListener('click',()=>{selectedArea=null;renderRoute();updateMap();});
-  document.getElementById('toggle-routes').addEventListener('click',event=>{showRoutes=!showRoutes;event.currentTarget.setAttribute('aria-pressed',String(showRoutes));drawMovement();});
+  document.getElementById('fit-route').addEventListener('click',()=>{selectedArea=null;activeRoad=null;renderRoute();renderNavigation();updateMap();});
+  document.getElementById('toggle-routes').addEventListener('click',event=>{showRoutes=!showRoutes;event.currentTarget.setAttribute('aria-pressed',String(showRoutes));drawRoads();});
   function setMapMode(mode) {
     mapMode=mode;
     document.getElementById('mode-routes').setAttribute('aria-pressed',String(mode==='routes'));
@@ -319,7 +383,7 @@
     document.getElementById('route-map').hidden=mode==='google'; map.hidden=mode==='routes';
     dayTabs.hidden=mode==='google'; routeDetails.hidden=mode==='google';
     document.querySelector('.map-key').hidden=mode==='google';
-    renderAnalysis(); updateMap(mode==='google' && Boolean(selectedHome));
+    renderAnalysis();renderNavigation(); updateMap(mode==='google' && Boolean(selectedHome));
   }
   document.getElementById('mode-routes').addEventListener('click',()=>setMapMode('routes'));
   document.getElementById('mode-google').addEventListener('click',()=>setMapMode('google'));
