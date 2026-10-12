@@ -24,6 +24,22 @@
       mapLabel.textContent = '全部 8 間住宿';
     }
     map.src = url.href;
+    for (const card of list.querySelectorAll('.stay-card')) {
+      const selected = card.id === 'stay-' + home?.id;
+      card.classList.toggle('is-selected', selected);
+      const summary = card.querySelector('summary');
+      if (selected) summary.setAttribute('aria-current', 'true');
+      else summary.removeAttribute('aria-current');
+    }
+  }
+  function focusHome(home) {
+    showMap(home);
+    if (matchMedia('(max-width:760px)').matches) {
+      requestAnimationFrame(() => document.querySelector('.map-panel').scrollIntoView({
+        behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth',
+        block: 'start'
+      }));
+    }
   }
   function el(tag, cls, text) {
     const node = document.createElement(tag);
@@ -39,6 +55,7 @@
     const card = el('details','stay-card');
     card.id = 'stay-' + home.id;
     const summary = el('summary');
+    summary.addEventListener('click', () => focusHome(home));
     summary.append(el('span','letter',home.letter));
     const heading = el('span');
     heading.append(el('span','card-name',home.short),el('span','card-area',home.area));
@@ -54,7 +71,7 @@
     detail.append(price,el('p','note-label','配合這次行程'),el('p','fact-note',home.itinerary),el('p','note-label','訂房前確認'),el('p','fact-note',home.note));
     const actions=el('div','card-actions');
     const focus=el('button','focus-button','在地圖聚焦');focus.type='button';focus.setAttribute('aria-label','在地圖聚焦 '+home.name);
-    focus.addEventListener('click',()=>{showMap(home);if(matchMedia('(max-width:760px)').matches)document.querySelector('.map-panel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});});
+    focus.addEventListener('click', () => focusHome(home));
     actions.append(focus,link('查看房源 ↗',home.url,'listing-link'));detail.append(actions);
     detail.append(link(home.locationType==='approximate'?'Airbnb 公開約略位置 ↗':'Google 商家位置 ↗',home.mapSource,'location-source'));
     if(home.extraSource)detail.append(document.createElement('br'),link('整棟房型資料來源 ↗',home.extraSource,'location-source'));
