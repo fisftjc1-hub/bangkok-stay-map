@@ -2,7 +2,7 @@
 
 Public comparison of eight Bangkok group accommodation options for 13–16 December 2026, 15 adults and three nights.
 
-The static site includes an interactive itinerary map and the public Google My Maps accommodation view. The OpenStreetMap/OSRM mode needs no API key. The Google Maps mode uses Maps JavaScript API + Routes API with a browser key and map ID in `maps-config.js`; it activates only when both are set. No backend or build step is needed. Publish the repository's main branch root using GitHub Pages.
+The static site uses one interactive itinerary map for accommodation markers, activity areas and routes. Google Maps uses Maps JavaScript API + Routes API with a browser key and map ID in `maps-config.js`; it activates only when both are set. With blank configuration, the map uses OpenStreetMap/OSRM. The header links to the public Google My Maps view. No backend or build step is needed. Publish the repository's main branch root using GitHub Pages.
 
 ## Files
 

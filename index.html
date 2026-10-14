@@ -9,14 +9,14 @@
   <title>Bangkok Trip Note</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="vendor/leaflet.css">
-  <link rel="stylesheet" href="styles.css?v=20261012-transit1">
+  <link rel="stylesheet" href="styles.css?v=20261014-single-map">
   <script src="vendor/leaflet.js" defer></script>
   <script src="data.js" defer></script>
   <script src="itinerary.js?v=20261012-areas" defer></script>
   <script src="navigation.js?v=20261012-transit1" defer></script>
   <script src="maps-config.js?v=20261012-live2" defer></script>
   <script src="google-maps.js?v=20261012-transit2" defer></script>
-  <script src="app.js?v=20261012-transit2" defer></script>
+  <script src="app.js?v=20261014-single-map" defer></script>
 </head>
 <body>
   <a class="skip" href="#stay-list">跳到住宿選項</a>
@@ -34,9 +34,8 @@
     </aside>
     <section class="map-panel" aria-label="Google 地圖與所有候選位置">
       <div class="map-toolbar"><div><span class="live-dot" aria-hidden="true"></span><strong id="map-label" aria-live="polite">全部 8 間住宿</strong></div><div class="map-actions"><button id="home-closeup" type="button" hidden>房源近景</button><button id="show-all" type="button">全部房源 <span aria-hidden="true">↗</span></button></div></div>
-      <div class="map-modes" role="group" aria-label="地圖檢視"><button id="mode-routes" type="button" aria-pressed="true">動線</button><button id="mode-google" type="button" aria-pressed="false">Google 地圖</button></div>
       <nav id="day-tabs" class="day-tabs" aria-label="行程日期"></nav>
-      <div class="map-wrap"><div id="route-map" aria-label="曼谷房源、行程動線與活動範圍"></div><div id="gmp-map" aria-label="Google Maps 房源與行程交通路線" hidden></div><div id="map-error" role="status" hidden></div><iframe id="stay-map" title="曼谷八間住宿的 Google 客製地圖" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" hidden></iframe></div>
+      <div class="map-wrap"><div id="route-map" aria-label="曼谷房源、行程動線與活動範圍"></div><div id="gmp-map" aria-label="Google Maps 房源與行程交通路線" hidden></div><div id="map-error" role="status" hidden></div></div>
       <div class="map-key"><span class="key-home">房源</span><button id="toggle-routes" class="key-route" type="button" aria-pressed="true">交通路線</button><span class="key-area">活動範圍（概略）</span><button id="fit-route" type="button">全部路線</button></div>
       <div id="route-settings" class="route-settings" hidden><label for="departure-time">出發時間（曼谷）</label><input id="departure-time" type="datetime-local" step="60"><button id="update-departure" type="button">更新路線</button><span id="departure-error" role="status" hidden></span></div>
       <section id="navigation-panel" class="navigation-panel" aria-label="交通路線比較" hidden></section>

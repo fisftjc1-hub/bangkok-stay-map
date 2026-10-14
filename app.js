@@ -2,7 +2,6 @@
   'use strict';
   const data = window.STAY_DATA;
   const list = document.getElementById('stay-list');
-  const map = document.getElementById('stay-map');
   const mapLabel = document.getElementById('map-label');
   const itinerary = window.ITINERARY_DATA;
   const dayTabs = document.getElementById('day-tabs');
@@ -27,7 +26,6 @@
   let activeDay = 'all';
   let selectedArea = null;
   let showRoutes = true;
-  let mapMode = 'routes';
   const reducedMotion = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const routeMap = L.map('route-map',{center:[13.74,100.56],zoom:12,scrollWheelZoom:true,minZoom:6,maxZoom:19,zoomSnap:.5,zoomControl:false});
   if(!useGoogle) L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(routeMap);
@@ -84,7 +82,7 @@
   }
   function renderNavigation() {
     navigationPanel.replaceChildren();
-    const center=roadCenter();navigationPanel.hidden=!center || mapMode==='google';
+    const center=roadCenter();navigationPanel.hidden=!center;
     const pairs=roadPairs();
     routeSettings.hidden=navigationPanel.hidden||!useGoogle||!pairs.some(pair=>!pair.requiresBoat&&pair.travelMode==='TRANSIT');
     if(!center) return;
@@ -140,7 +138,7 @@
           roadData.routes[pair.destination.id]=result;renderNavigation();drawRoads();
         },{departureTime:departureTime()});
       } catch(error) {if(generation!==roadGeneration)return;roadError=true;renderNavigation();}
-      if(generation===roadGeneration && mapMode==='routes') updateMap();
+      if(generation===roadGeneration) updateMap();
       return;
     }
     try {
@@ -149,7 +147,7 @@
       roadData=result;
     } catch(error) {if(generation!==roadGeneration)return;roadError=true;}
     renderNavigation();drawRoads();
-    if(mapMode==='routes') updateMap();
+    updateMap();
   }
   function focusPlace(place) {
     selectedPlace=place;selectedHome=null;selectedArea=null;
@@ -233,20 +231,9 @@
     drawRoads();
     updateAreaLabels();
   }
-  function camera(points) {
-    const project = p => ({x: (p.lng + 180) / 360, y: (1 - Math.log(Math.tan(Math.PI / 4 + p.lat * Math.PI / 360)) / Math.PI) / 2});
-    const projected = points.map(project);
-    const xs = projected.map(p => p.x), ys = projected.map(p => p.y);
-    const west = Math.min(...xs), east = Math.max(...xs), north = Math.min(...ys), south = Math.max(...ys);
-    const rect = map.getBoundingClientRect();
-    const width = Math.max(220, rect.width - 110), height = Math.max(220, rect.height - 150);
-    const zoom = Math.min(15, Math.floor(Math.min(Math.log2(width / (256 * Math.max(east - west, .000001))), Math.log2(height / (256 * Math.max(south - north, .000001))))) - 1);
-    const lat = Math.atan(Math.sinh(Math.PI * (1 - north - south))) * 180 / Math.PI;
-    return {lat, lng: (west + east) * 180 - 180, zoom: Math.max(6, zoom)};
-  }
   function updateMap(closeup = false, place = null, area = null) {
     const localSamet=(activeDay==='d12' || area?.scope==='samet') && !selectedPlace;
-    const points = localSamet && mapMode==='routes' ? [] : selectedHome ? [selectedHome] : [...data.homes];
+    const points = localSamet ? [] : selectedHome ? [selectedHome] : [...data.homes];
     if(selectedPlace) points.push(selectedPlace);
     for (const day of area || selectedPlace ? [] : visibleDays()) {
       points.push(...day.stops.map(id => itinerary.places[id]));
@@ -257,21 +244,13 @@
       const result=roadResult(pair);
       if(result.status==='ready') points.push(...roadPath(result).map(([lat,lng])=>({lat,lng})));
     }
-    if (mapMode==='google') { points.length=0; points.push(...(selectedHome?[selectedHome]:data.homes)); }
-    const view = place ? {lat:place.lat,lng:place.lng,zoom:16} : closeup && selectedHome ? {...selectedHome,zoom:15} : camera(points);
     const mapId = itinerary.maps[activeDay] || itinerary.maps.all;
-    const url = new URL('https://www.google.com/maps/d/embed');
-    url.searchParams.set('mid', mapId);
-    url.searchParams.set('hl', 'zh-TW');
-    url.searchParams.set('ll', view.lat + ',' + view.lng);
-    url.searchParams.set('z', String(view.zoom));
-    if (mapMode === 'google') {
-      if (map.getAttribute('src') !== url.href) map.src = url.href;
-    } else if(useGoogle) {
+    if(useGoogle) {
       const errorPanel=document.getElementById('map-error');errorPanel.hidden=true;
       googleMap.render({homes:data.homes,places:visiblePlaces(),areas:visibleAreas().map(a=>({...a,selected:a.id===selectedArea})),center:roadCenter(),pairs:roadPairs(),resultFor:roadResult,showRoutes,activeRoad,fitPoints:points,closeup:place || closeup&&selectedHome}).catch(error=>{errorPanel.textContent='Google 地圖暫時無法載入';errorPanel.hidden=false;});
     } else {
       drawMovement(); routeMap.invalidateSize();
+      const view=place?{...place,zoom:16}:closeup&&selectedHome?{...selectedHome,zoom:15}:null;
       if (place || closeup && selectedHome) routeMap.flyTo([view.lat,view.lng],view.zoom,{animate:!reducedMotion,duration:.6});
       else routeMap.flyToBounds(L.latLngBounds(points.map(p=>[p.lat,p.lng])),{padding:[35,35],maxZoom:14,animate:!reducedMotion,duration:.65});
     }
@@ -431,21 +410,7 @@
   document.getElementById('home-closeup').addEventListener('click',()=>updateMap(true));
   document.getElementById('fit-route').addEventListener('click',()=>{selectedArea=null;activeRoad=null;renderRoute();renderNavigation();updateMap();});
   document.getElementById('toggle-routes').addEventListener('click',event=>{showRoutes=!showRoutes;event.currentTarget.setAttribute('aria-pressed',String(showRoutes));drawRoads();});
-  function setMapMode(mode) {
-    mapMode=mode;
-    document.getElementById('mode-routes').setAttribute('aria-pressed',String(mode==='routes'));
-    document.getElementById('mode-google').setAttribute('aria-pressed',String(mode==='google'));
-    document.getElementById('route-map').hidden=mode==='google'||useGoogle;
-    document.getElementById('gmp-map').hidden=mode==='google'||!useGoogle;map.hidden=mode==='routes';
-    document.getElementById('map-error').hidden=true;
-    dayTabs.hidden=mode==='google'; routeDetails.hidden=mode==='google';
-    document.querySelector('.map-key').hidden=mode==='google';
-    renderAnalysis();renderNavigation(); updateMap(mode==='google' && Boolean(selectedHome));
-  }
-  document.getElementById('mode-routes').addEventListener('click',()=>setMapMode('routes'));
-  document.getElementById('mode-google').addEventListener('click',()=>setMapMode('google'));
   if(useGoogle) {
-    document.getElementById('mode-routes').textContent='Google Maps';document.getElementById('mode-google').textContent='住宿圖';
     document.getElementById('route-map').hidden=true;document.getElementById('gmp-map').hidden=false;
     document.getElementById('map-policies').hidden=false;
     window.addEventListener('trip-google-auth-failure',()=>{googleMap.cancel();const errorPanel=document.getElementById('map-error');errorPanel.textContent='Google 地圖授權失敗';errorPanel.hidden=false;});
