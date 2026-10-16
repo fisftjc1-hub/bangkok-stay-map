@@ -1,8 +1,8 @@
 # Bangkok Stay Map
 
-Public comparison of eight Bangkok group accommodation options for 13–16 December 2026, 15 adults and three nights.
+Public comparison of three shortlisted Bangkok group accommodation options for 13–16 December 2026, 15 adults and three nights: Ratchada Retreat, Comfy and Nana. The original eight records remain in `data.js`; `visibleHomeIds` controls the homes shown in the list, map, bounds and route destinations. Original marker letters are retained.
 
-The static site uses one interactive itinerary map for accommodation markers, activity areas and routes. Google Maps uses Maps JavaScript API + Routes API with a browser key and map ID in `maps-config.js`; it activates only when both are set. With blank configuration, the map uses OpenStreetMap/OSRM. The header links to the public Google My Maps view. No backend or build step is needed. Publish the repository's main branch root using GitHub Pages.
+The static site uses one interactive itinerary map for accommodation markers, activity areas and routes. Google Maps uses Maps JavaScript API + Routes API with a browser key and map ID in `maps-config.js`; it activates only when both are set. With blank configuration, the map uses OpenStreetMap/OSRM. The header opens the selected point or current comparison area in Google Maps rather than the legacy eight-property My Maps view. No backend or build step is needed. Publish the repository's main branch root using GitHub Pages.
 
 ## Files
 
@@ -21,7 +21,7 @@ Airbnb coordinates are public approximate map positions, not confirmed entrance 
 
 To update positions, update `data.js` and the corresponding Google My Maps markers together. Do not publish private booking confirmations, personal contact information, or credentials in this repository.
 
-Click a home to show routes to the visible itinerary points. Click a POI marker or its name to show routes from that POI to all eight homes. Bangkok destinations use public transportation, including walking to and from stations; Ban Phe and BKK use driving. Route directions are computed separately. Click a distance/time card or line to focus a single route; click its destination name to change the origin. Day filters limit POI destinations; Full Journey includes Ban Phe. The route toggle hides paths without hiding places or areas.
+Click a home to show routes to the visible itinerary points. Click a POI marker or its name to show routes from that POI to the visible shortlisted homes. Bangkok destinations use public transportation, including walking to and from stations; Ban Phe and BKK use driving. Route directions are computed separately. Click a distance/time card or line to focus a single route; click its destination name to change the origin. Day filters limit POI destinations; Full Journey includes Ban Phe. The route toggle hides paths without hiding places or areas.
 
 With blank Google configuration, displayed road paths use OSRM / OpenStreetMap. Each route also links to Google Maps with the same directed endpoints. OSRM paths were fetched on 12 October 2026 at no more than one request per second and served as static files, so visitors make no requests to the public OSRM demo service. Durations are model estimates without live traffic; Airbnb endpoints are approximate public positions and not verified entrances. No straight-line fallback is drawn for a missing route. Koh Samet beach and island-pier connections are marked as needing boat transfers rather than represented as continuous driving routes.
 

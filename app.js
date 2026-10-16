@@ -1,6 +1,12 @@
 (() => {
   'use strict';
-  const data = window.STAY_DATA;
+  const sourceData=window.STAY_DATA;
+  const visibleHomeIds=new Set(sourceData.visibleHomeIds||sourceData.homes.map(home=>home.id));
+  const data={...sourceData,homes:sourceData.homes.filter(home=>visibleHomeIds.has(home.id))};
+  const homeCount=data.homes.length;
+  const allHomesLabel='全部 '+homeCount+' 間住宿';
+  document.querySelector('.count').textContent=String(homeCount).padStart(2,'0');
+  document.querySelector('.options-panel').setAttribute('aria-label',homeCount+' 間住宿比較');
   const list = document.getElementById('stay-list');
   const mapLabel = document.getElementById('map-label');
   const itinerary = window.ITINERARY_DATA;
@@ -38,9 +44,6 @@
   let areaPolygons=[];
   const fmt = new Intl.NumberFormat('zh-TW');
   const money = n => 'NT$' + fmt.format(n);
-  const viewer = new URL('https://www.google.com/maps/d/viewer');
-  viewer.searchParams.set('mid', data.myMapsId);
-  document.getElementById('open-google').href = viewer.href;
 
   function distance(a, b) {
     const radians = Math.PI / 180;
@@ -151,7 +154,7 @@
   }
   function focusPlace(place) {
     selectedPlace=place;selectedHome=null;selectedArea=null;
-    mapLabel.textContent=place.name+' → 8 間房源';
+    mapLabel.textContent=place.name+' → '+homeCount+' 間房源';
     document.getElementById('home-closeup').hidden=true;
     for(const card of list.querySelectorAll('.stay-card')) {card.classList.remove('is-selected');card.querySelector('summary').removeAttribute('aria-current');}
     renderRoute();renderAnalysis();updateNavigation();updateMap();scrollToMap();
@@ -244,7 +247,6 @@
       const result=roadResult(pair);
       if(result.status==='ready') points.push(...roadPath(result).map(([lat,lng])=>({lat,lng})));
     }
-    const mapId = itinerary.maps[activeDay] || itinerary.maps.all;
     if(useGoogle) {
       const errorPanel=document.getElementById('map-error');errorPanel.hidden=true;
       googleMap.render({homes:data.homes,places:visiblePlaces(),areas:visibleAreas().map(a=>({...a,selected:a.id===selectedArea})),center:roadCenter(),pairs:roadPairs(),resultFor:roadResult,showRoutes,activeRoad,fitPoints:points,closeup:place || closeup&&selectedHome}).catch(error=>{errorPanel.textContent='Google 地圖暫時無法載入';errorPanel.hidden=false;});
@@ -254,15 +256,24 @@
       if (place || closeup && selectedHome) routeMap.flyTo([view.lat,view.lng],view.zoom,{animate:!reducedMotion,duration:.6});
       else routeMap.flyToBounds(L.latLngBounds(points.map(p=>[p.lat,p.lng])),{padding:[35,35],maxZoom:14,animate:!reducedMotion,duration:.65});
     }
-    viewer.searchParams.set('mid',mapId);
-    document.getElementById('open-google').href = viewer.href;
+    const focusPoint=place||selectedPlace||selectedHome;
+    const externalMap=new URL(focusPoint?'https://www.google.com/maps/search/':'https://www.google.com/maps/@');
+    externalMap.searchParams.set('api','1');
+    if(focusPoint) externalMap.searchParams.set('query',focusPoint.lat+','+focusPoint.lng);
+    else if(points.length) {
+      const lats=points.map(point=>point.lat),lngs=points.map(point=>point.lng);
+      externalMap.searchParams.set('map_action','map');
+      externalMap.searchParams.set('center',(Math.min(...lats)+Math.max(...lats))/2+','+(Math.min(...lngs)+Math.max(...lngs))/2);
+      externalMap.searchParams.set('zoom',activeDay==='journey'?9:12);
+    }
+    document.getElementById('open-google').href=externalMap.href;
   }
   function selectDay(id) {
     activeDay = id;
     if(/^d1[2-6]$/.test(id)) {departureLocal='2026-12-'+id.slice(1)+departureLocal.slice(10);departureInput.value=departureLocal;}
     selectedArea=null;
     activeRoad=null;
-    if(selectedPlace && !visiblePlaces().some(p=>p.id===selectedPlace.id)) {selectedPlace=null;mapLabel.textContent='全部 8 間住宿';}
+    if(selectedPlace && !visiblePlaces().some(p=>p.id===selectedPlace.id)) {selectedPlace=null;mapLabel.textContent=allHomesLabel;}
     document.querySelector('.map-key').style.setProperty('--route-color',isOverview()?'#2878b8':visibleDays()[0].color);
     for (const button of dayTabs.querySelectorAll('button')) button.setAttribute('aria-pressed',String(button.dataset.day === id));
     renderRoute(); renderAnalysis(); renderNavigation();
@@ -334,7 +345,7 @@
     selectedHome = home || null;
     selectedPlace=null;
     selectedArea=null;
-    mapLabel.textContent = selectedHome ? home.letter + ' · ' + home.short : '全部 8 間住宿';
+    mapLabel.textContent = selectedHome ? home.letter + ' · ' + home.short : allHomesLabel;
     document.getElementById('home-closeup').hidden = !selectedHome;
     for (const card of list.querySelectorAll('.stay-card')) {
       const selected = card.id === 'stay-' + selectedHome?.id;

@@ -6,6 +6,7 @@ window.STAY_DATA = {
   "nights": 3,
   "checked": "2026-10-08",
   "myMapsId": "1jGxUs7SIGYx37n1bSOzc9mLkoMS_sEw",
+  "visibleHomeIds": ["ratchada", "comfy", "nana"],
   "homes": [
     {
       "id": "modern",
