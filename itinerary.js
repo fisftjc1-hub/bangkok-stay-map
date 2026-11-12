@@ -1,5 +1,5 @@
 window.ITINERARY_DATA = {
-  "checked": "2026-10-12",
+  "checked": "2026-11-12",
   "places": {
     "palace": {
       "id": "palace",
@@ -163,11 +163,19 @@ window.ITINERARY_DATA = {
     },
     "asok": {
       "id": "asok",
-      "name": "Asok／Phrom Phong 住宿區",
-      "lat": 13.737,
-      "lng": 100.56,
-      "google": "https://www.google.com/maps/search/?api=1&query=Asok+Bangkok",
-      "source": "https://www.openstreetmap.org/node/12438224305"
+      "name": "Ratchada Retreat",
+      "lat": 13.7628673,
+      "lng": 100.5634893,
+      "google": "https://www.google.com/maps/search/?api=1&query=Ratchada%20Retreat%20Boutique%20Suites",
+      "source": "https://www.booking.com/hotel/th/ratchada-retreat-boutique-suites.html"
+    },
+    "baanploy": {
+      "id": "baanploy",
+      "name": "Baan Ploy Sea（住宿）",
+      "lat": 12.57543,
+      "lng": 101.45715,
+      "google": "https://www.google.com/maps/search/?api=1&query=Baan%20Ploy%20Sea%20Koh%20Samet",
+      "source": "https://www.baanploysea.com/"
     }
   },
   "days": [
@@ -180,6 +188,7 @@ window.ITINERARY_DATA = {
       "stops": [
         "banphe",
         "nadan",
+        "baanploy",
         "saikaew",
         "aophai"
       ],
@@ -339,6 +348,163 @@ window.ITINERARY_DATA = {
           ],
           "members": [
             "banphe"
+          ]
+        },
+        {
+          "id": "aonoina",
+          "name": "Ao Noi Na・Baan Ploy Sea",
+          "coordinates": [
+            [
+              101.459911,
+              12.57543
+            ],
+            [
+              101.459869,
+              12.575898
+            ],
+            [
+              101.459745,
+              12.576352
+            ],
+            [
+              101.459541,
+              12.576777
+            ],
+            [
+              101.459265,
+              12.577162
+            ],
+            [
+              101.458925,
+              12.577494
+            ],
+            [
+              101.458531,
+              12.577764
+            ],
+            [
+              101.458094,
+              12.577962
+            ],
+            [
+              101.457629,
+              12.578084
+            ],
+            [
+              101.45715,
+              12.578125
+            ],
+            [
+              101.456671,
+              12.578084
+            ],
+            [
+              101.456206,
+              12.577962
+            ],
+            [
+              101.455769,
+              12.577764
+            ],
+            [
+              101.455375,
+              12.577494
+            ],
+            [
+              101.455035,
+              12.577162
+            ],
+            [
+              101.454759,
+              12.576777
+            ],
+            [
+              101.454555,
+              12.576352
+            ],
+            [
+              101.454431,
+              12.575898
+            ],
+            [
+              101.454389,
+              12.57543
+            ],
+            [
+              101.454431,
+              12.574962
+            ],
+            [
+              101.454555,
+              12.574508
+            ],
+            [
+              101.454759,
+              12.574083
+            ],
+            [
+              101.455035,
+              12.573698
+            ],
+            [
+              101.455375,
+              12.573366
+            ],
+            [
+              101.455769,
+              12.573096
+            ],
+            [
+              101.456206,
+              12.572898
+            ],
+            [
+              101.456671,
+              12.572776
+            ],
+            [
+              101.45715,
+              12.572735
+            ],
+            [
+              101.457629,
+              12.572776
+            ],
+            [
+              101.458094,
+              12.572898
+            ],
+            [
+              101.458531,
+              12.573096
+            ],
+            [
+              101.458925,
+              12.573366
+            ],
+            [
+              101.459265,
+              12.573698
+            ],
+            [
+              101.459541,
+              12.574083
+            ],
+            [
+              101.459745,
+              12.574508
+            ],
+            [
+              101.459869,
+              12.574962
+            ],
+            [
+              101.459911,
+              12.57543
+            ]
+          ],
+          "members": [
+            "baanploy"
           ]
         },
         {
@@ -667,18 +833,19 @@ window.ITINERARY_DATA = {
         {
           "stops": [
             "nadan",
+            "baanploy",
             "saikaew",
             "aophai"
           ],
           "mode": "local"
         }
       ],
-      "note": "第一天前往沙美島；島上或曼谷住宿未定。",
+      "note": "當晚住島上 Baan Ploy Sea（Ao Noi Na）；飯店接駁船由 Ban Phe 的 Ao Prao Pier 出發。",
       "pending": [
-        "船班／碼頭：未定",
+        "船班：未定",
         "海灘酒吧／夕陽地點：未定"
       ],
-      "analysis": "Ban Phe 接駁上島後，活動集中 Sai Kaew Beach 與 Ao Phai；Na Dan 為接駁參考。"
+      "analysis": "Ban Phe 搭船上島，入住北岸 Ao Noi Na 的 Baan Ploy Sea；活動集中 Sai Kaew Beach 與 Ao Phai。"
     },
     {
       "id": "d13",
@@ -1325,9 +1492,9 @@ window.ITINERARY_DATA = {
           ]
         }
       ],
-      "note": "若前晚住沙美島，先接駁返曼谷；Supanniga 安排傍晚或晚餐。",
+      "note": "上午由沙美島搭船、包車返曼谷；Supanniga 安排傍晚或晚餐。",
       "pending": [],
-      "analysis": "景點集中湄南河兩岸，與 Sukhumvit 住宿區分開；當天集中往返河岸區。"
+      "analysis": "景點集中湄南河兩岸；從 Ratchada 可搭 MRT 藍線直達 Sanam Chai。"
     },
     {
       "id": "d14",
@@ -1818,7 +1985,7 @@ window.ITINERARY_DATA = {
       ],
       "note": "採原行程 A：市中心購物後前往 Bangna。",
       "pending": [],
-      "analysis": "Siam 與 Bangna 是兩個分離的活動區，安排一路向東，避免中途回住宿。"
+      "analysis": "Siam 與 Bangna 是兩個分離的活動區，安排一路向東南，避免中途回住宿。"
     },
     {
       "id": "d15",
@@ -2152,7 +2319,7 @@ window.ITINERARY_DATA = {
         "按摩：店家未定",
         "Rooftop：店家未定"
       ],
-      "analysis": "活動沿 Asok—Phrom Phong 集中，住宿越靠近這段商圈，分頭活動與回房越方便。"
+      "analysis": "活動沿 Asok—Phrom Phong 集中；從 Ratchada 搭 MRT 兩站到 Sukhumvit／Asok。"
     },
     {
       "id": "d16",
@@ -2641,7 +2808,7 @@ window.ITINERARY_DATA = {
       ],
       "note": "原定 10:30 往 BKK；Siam 採買時段待調整。",
       "pending": [],
-      "analysis": "最後前往東側 BKK；若仍在 Siam 採買，應以 Siam→BKK 比較接送動線。"
+      "analysis": "最後前往東側 BKK；若仍在 Siam 採買，以 Siam→BKK 安排接送。"
     }
   ],
   "maps": {

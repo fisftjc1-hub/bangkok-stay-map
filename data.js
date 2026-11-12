@@ -1,12 +1,12 @@
 window.STAY_DATA = {
-  "title": "曼谷包棟住宿比較",
+  "title": "曼谷・沙美島旅遊攻略",
   "checkIn": "2026-12-13",
   "checkOut": "2026-12-16",
   "adults": 15,
   "nights": 3,
   "checked": "2026-10-08",
   "myMapsId": "1jGxUs7SIGYx37n1bSOzc9mLkoMS_sEw",
-  "visibleHomeIds": ["ratchada", "comfy", "nana"],
+  "visibleHomeIds": ["ratchada"],
   "homes": [
     {
       "id": "modern",
@@ -59,7 +59,7 @@ window.STAY_DATA = {
       "note": "同時販售不同樓層與套房，須選 Entire Private Boutique Suites House，不能把單一套房價格當包棟價。",
       "itinerary": "在 Asok 北方的 Ratchada 區；往 Sukhumvit 景點需搭車或銜接 MRT。",
       "extraSource": "https://www.trip.com/hotels/bangkok-hotel-detail-122878655/ratchada-retreat-boutique-suites/",
-      "letter": "B",
+      "letter": "住",
       "checked": "2026-10-08"
     },
     {

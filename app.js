@@ -1,18 +1,15 @@
-(() => {
+// Map view of the trip guide. Initialised lazily by guide-app.js the first time the map tab is shown.
+window.TripMapInit = () => {
   'use strict';
   const sourceData=window.STAY_DATA;
   const visibleHomeIds=new Set(sourceData.visibleHomeIds||sourceData.homes.map(home=>home.id));
   const data={...sourceData,homes:sourceData.homes.filter(home=>visibleHomeIds.has(home.id))};
   const homeCount=data.homes.length;
-  const allHomesLabel='全部 '+homeCount+' 間住宿';
-  document.querySelector('.count').textContent=String(homeCount).padStart(2,'0');
-  document.querySelector('.options-panel').setAttribute('aria-label',homeCount+' 間住宿比較');
-  const list = document.getElementById('stay-list');
+  const allHomesLabel='住宿與行程';
   const mapLabel = document.getElementById('map-label');
   const itinerary = window.ITINERARY_DATA;
   const dayTabs = document.getElementById('day-tabs');
   const routeDetails = document.getElementById('route-details');
-  const locationAnalysis = document.getElementById('location-analysis');
   const navigationPanel = document.getElementById('navigation-panel');
   const routeSettings=document.getElementById('route-settings');
   const departureInput=document.getElementById('departure-time');
@@ -92,8 +89,8 @@
     const heading=el('div','navigation-heading');
     const modes=new Set(pairs.filter(pair=>!pair.requiresBoat).map(pair=>pair.travelMode));
     const modeLabel=modes.size>1?'大眾交通／開車':modes.has('TRANSIT')?'大眾交通':modes.has('DRIVING')?'開車':'船班接駁';
-    heading.append(el('h2','',center.type==='home'?center.point.short+' → 景點':center.point.name+' → 房源'),el('span','',modeLabel));
-    const meta=el('p','navigation-meta',(useGoogle?'Google Maps':'OSRM / OpenStreetMap・2026/10/12')+(center.type==='home'&&center.point.locationType==='approximate'?'・房源約略位置':center.type==='place'?'・部分房源為約略位置':''));
+    heading.append(el('h2','',center.type==='home'?center.point.short+' → 景點':center.point.name+' → 住宿'),el('span','',modeLabel));
+    const meta=el('p','navigation-meta',(useGoogle?'Google Maps':'OSRM / OpenStreetMap・2026/10/12')+'');
     const grid=el('div','road-grid');
     for(const pair of pairs) {
       const result=roadResult(pair),tile=el('div','road-tile');tile.style.setProperty('--road-color',pair.color);
@@ -154,9 +151,8 @@
   }
   function focusPlace(place) {
     selectedPlace=place;selectedHome=null;selectedArea=null;
-    mapLabel.textContent=place.name+' → '+homeCount+' 間房源';
+    mapLabel.textContent=place.name+' → 住宿';
     document.getElementById('home-closeup').hidden=true;
-    for(const card of list.querySelectorAll('.stay-card')) {card.classList.remove('is-selected');card.querySelector('summary').removeAttribute('aria-current');}
     renderRoute();renderAnalysis();updateNavigation();updateMap();scrollToMap();
   }
   function visibleAreas() {
@@ -299,9 +295,8 @@
       places.append(buttons);routeDetails.append(places);
       if(activeDay==='journey') {
         const transfer=el('div','transfer-summary');
-        transfer.append(el('strong','','12/13 返曼谷'),el('span','','沙美島 → Ban Phe → '+(selectedHome?selectedHome.short:'Asok／Phrom Phong')));
-        transfer.append(el('span','transfer-note','島上過夜時'));
-        routeDetails.append(transfer);
+        transfer.append(el('strong','','12/13 返曼谷'),el('span','','沙美島 → Ban Phe → '+data.homes[0].short));
+            routeDetails.append(transfer);
       }
     } else {
     const day = visibleDays()[0];
@@ -339,21 +334,13 @@
     routeDetails.append(heading,grid);
   }
   function renderAnalysis() {
-    locationAnalysis.replaceChildren();locationAnalysis.hidden=true;
   }
   function showMap(home) {
     selectedHome = home || null;
     selectedPlace=null;
     selectedArea=null;
-    mapLabel.textContent = selectedHome ? home.letter + ' · ' + home.short : allHomesLabel;
+    mapLabel.textContent = selectedHome ? home.short : allHomesLabel;
     document.getElementById('home-closeup').hidden = !selectedHome;
-    for (const card of list.querySelectorAll('.stay-card')) {
-      const selected = card.id === 'stay-' + selectedHome?.id;
-      card.classList.toggle('is-selected', selected);
-      const summary = card.querySelector('summary');
-      if (selected) summary.setAttribute('aria-current', 'true');
-      else summary.removeAttribute('aria-current');
-    }
     renderRoute(); renderAnalysis(); updateNavigation();updateMap();
   }
   function focusHome(home) {
@@ -362,12 +349,7 @@
     scrollToMap();
   }
   function scrollToMap() {
-    if (matchMedia('(max-width:760px)').matches) {
-      requestAnimationFrame(() => document.querySelector('.map-panel').scrollIntoView({
-        behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth',
-        block: 'start'
-      }));
-    } else document.querySelector('.map-panel').scrollTo({top:0,behavior:reducedMotion?'auto':'smooth'});
+    requestAnimationFrame(() => document.querySelector('.map-wrap').scrollIntoView({behavior:reducedMotion?'auto':'smooth',block:'center'}));
   }
   function el(tag, cls, text) {
     const node = document.createElement(tag);
@@ -385,32 +367,6 @@
     button.append(el('span','day-dot'),el('strong','',day.date),el('span','day-tab-label',day.label));
     button.addEventListener('click',()=>selectDay(day.id)); dayTabs.append(button);
   }
-  for (const home of data.homes) {
-    const card = el('details','stay-card');
-    card.id = 'stay-' + home.id;
-    const summary = el('summary');
-    summary.addEventListener('click', () => focusHome(home));
-    summary.append(el('span','letter',home.letter));
-    const heading = el('span');
-    heading.append(el('span','card-name',home.short),el('span','card-area',home.area));
-    summary.append(heading,el('span','chevron','⌄'));
-    const detail = el('div','card-detail');
-    detail.append(el('p','full-name',home.name),el('p','room-count',home.rooms),el('p','bed-note',home.beds));
-    const tags=el('div','tags');home.features.forEach(f=>tags.append(el('span','tag',f)));detail.append(tags);
-    const price=el('div','price');price.append(el('span','price-label','15 人 · 3 晚參考總價'));
-    if(home.price!==null) {
-      price.append(el('div','price-value',money(home.price)),el('p','price-per','約 '+money(Math.round(home.price/(data.adults*data.nights)))+'／人／晚'));
-    } else price.append(el('div','price-pending','指定日期報價待確認'));
-    if(home.rating)price.append(el('p','review','Airbnb '+home.rating+' · '+home.reviews+' 則評價'));
-    detail.append(price,el('p','note-label','配合這次行程'),el('p','fact-note',home.itinerary),el('p','note-label','訂房前確認'),el('p','fact-note',home.note));
-    const actions=el('div','card-actions');
-    const focus=el('button','focus-button','在地圖聚焦');focus.type='button';focus.setAttribute('aria-label','在地圖聚焦 '+home.name);
-    focus.addEventListener('click', () => focusHome(home));
-    actions.append(focus,link('查看房源 ↗',home.url,'listing-link'));detail.append(actions);
-    detail.append(link(home.locationType==='approximate'?'Airbnb 公開約略位置 ↗':'Google 商家位置 ↗',home.mapSource,'location-source'));
-    if(home.extraSource)detail.append(document.createElement('br'),link('整棟房型資料來源 ↗',home.extraSource,'location-source'));
-    card.append(summary,detail);list.append(card);
-  }
   document.getElementById('show-all').addEventListener('click',()=>showMap());
   document.getElementById('update-departure').addEventListener('click',()=>{
     const error=document.getElementById('departure-error');
@@ -427,6 +383,13 @@
     window.addEventListener('trip-google-auth-failure',()=>{googleMap.cancel();const errorPanel=document.getElementById('map-error');errorPanel.textContent='Google 地圖授權失敗';errorPanel.hidden=false;});
   }
   let resizeTimer;
-  window.addEventListener('resize',()=>{ clearTimeout(resizeTimer); resizeTimer=setTimeout(()=>updateMap(),180); });
+  window.addEventListener('resize',()=>{ clearTimeout(resizeTimer); resizeTimer=setTimeout(()=>{if(!document.getElementById('view-map').hidden)updateMap();},180); });
   showMap();
-})();
+  // Hooks for the guide pages: jump to a day, a place or the stay on the map.
+  window.TripMap={
+    refresh:()=>updateMap(),
+    day:id=>selectDay(id),
+    place:id=>{const day=itinerary.days.find(d=>d.stops.includes(id));if(day&&!visiblePlaces().some(p=>p.id===id))selectDay(day.id);const place=visiblePlaces().find(p=>p.id===id);if(place)focusPlace(place);},
+    home:id=>{const home=data.homes.find(h=>h.id===id);if(home)focusHome(home);}
+  };
+};
