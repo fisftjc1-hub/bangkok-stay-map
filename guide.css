@@ -45,6 +45,7 @@ mark{background:#fbe6b5;color:inherit;border-radius:2px;padding:0 1px}
 .hero-kicker{font-size:12px;letter-spacing:.14em;font-weight:650;opacity:.8}
 .hero h2{font-size:30px;font-weight:700;line-height:1.25}
 .hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14px;font-variant-numeric:tabular-nums;opacity:.95}
+.hero-flights{display:grid;gap:4px;font-size:13.5px;line-height:1.6;font-variant-numeric:tabular-nums}.hero-flights strong{display:inline-block;min-width:92px;font-weight:700}
 .hero-count{display:inline-flex;align-items:baseline;gap:8px;background:#ffffff1f;border-radius:12px;padding:10px 16px;width:fit-content}
 .hero-count strong{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
 .hero-count span{font-size:13px}

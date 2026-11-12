@@ -139,9 +139,11 @@
     const meta=el('div','hero-meta');
     meta.append(el('span','',guide.trip.start.replaceAll('-','.')+' — '+shortDate(guide.trip.end).replace('/','.')),el('span','',guide.trip.people+' 人 · '+(guide.days.length-1)+' 晚'),el('span','',guide.trip.route));
     hero.append(meta);
+    if(guide.trip.flights){const flights=el('div','hero-flights');for(const flight of guide.trip.flights){const row=el('p');row.append(el('strong','',flight.label+' '+flight.code),document.createTextNode(flight.date+'　'+flight.text));flights.append(row);}hero.append(flights);}
     const diff=dayNumber(guide.trip.start)-dayNumber(today),count=el('div','hero-count');
     if(diff>0)count.append(el('span','','距離出發'),el('strong','',String(diff)),el('span','','天'));
     else if(todayDay)count.append(el('span','','今天是'),el('strong','','Day '+(guide.days.indexOf(todayDay)+1)),el('span','',todayDay.title));
+    else if(diff===0)count.append(el('span','','今晚出發'),el('strong','','22:30'),el('span','','桃園第一航廈'));
     else count.append(el('span','','旅程已結束，辛苦了'));
     hero.append(count);view.append(hero);
 

@@ -3,7 +3,11 @@
 window.GUIDE = {
   updated: '2026-11-12',
   disclaimer: '開放時間、票價、船班與法規以 2026/11/12 查到的公開資料整理，標示「再確認」者來源不一致；出發前與當天請以官方公告和訂房確認信為準。',
-  trip: {name: '曼谷・沙美島', start: '2026-12-12', end: '2026-12-16', people: 15, route: '沙美島 1 晚 → 曼谷 3 晚'},
+  trip: {name: '曼谷・沙美島', start: '2026-12-11', end: '2026-12-16', people: 15, route: '沙美島 1 晚 → 曼谷 3 晚',
+    flights: [
+      {label: '去程', code: 'CI837', date: '12/11（五）', text: '桃園 TPE 第一航廈 22:30 → 蘇凡納布 BKK 01:35（12/12）'},
+      {label: '回程', code: 'CI832', date: '12/16（三）', text: '蘇凡納布 BKK 14:05 → 桃園 TPE 18:40'}
+    ]},
 
   stays: [
     {
@@ -130,21 +134,22 @@ window.GUIDE = {
       facts: [['營業', '09:00 起，多數資料寫到凌晨 02:00（關門時間再確認）'], ['退稅', '同日滿 2,000 泰銖，憑護照到店內退稅櫃台開 P.P.10 表單'], ['最近車站', 'BTS Chit Lom']],
       tips: ['退稅櫃台樓層各來源不一，到場直接問。', '比百貨早開門，適合放在最後一天早上。'], keywords: '超市 伴手禮 零食 退稅'},
     airport: {query: 'Suvarnabhumi Airport Departures', driveOnly: true, brief: '蘇凡納布 BKK・回程',
-      facts: [['出發', '原定 10:30 從市區出發'], ['車程', '不塞車推估 40–60 分鐘；尖峰（07:00–09:30、16:00–19:00）可能加倍']],
+      facts: [['班機', 'CI832 14:05 起飛，18:40 抵達桃園'], ['出發', '10:30 從住宿出發，約 11:30 前到機場'], ['車程', '不塞車推估 40–60 分鐘；尖峰（07:00–09:30、16:00–19:00）可能加倍']],
       tips: ['退稅金額滿 20,000 泰銖的人，報到前先到海關檢查櫃台驗貨。', '過移民關後到 VAT Refund 辦公室領款。'], links: [['退稅流程', '#info/vat'], ['機場交通', '#move/airport']], keywords: '機場 退稅 回程'}
   },
 
   days: [
     {id: 'd12', date: '2026-12-12', title: '沙美島', brief: '包車到 Ban Phe，搭船上島', sleep: 'baanploy',
-      summary: '抵達後包車到 Ban Phe，從 Ao Prao Pier 搭飯店接駁船上島，入住 Baan Ploy Sea，下午到傍晚在 Sai Kaew Beach 與 Ao Phai。',
+      summary: '凌晨 01:35 抵達曼谷，包車到 Ban Phe，從 Ao Prao Pier 搭飯店接駁船上島，入住 Baan Ploy Sea，下午到傍晚在 Sai Kaew Beach 與 Ao Phai。',
       steps: [
+        {title: '抵達蘇凡納布機場 BKK', icon: '機', time: '01:35', paras: ['中華航空 CI837，12/11（五）22:30 從桃園第一航廈起飛。入境、領行李後大約 02:30–03:00 才出得了機場。', '飯店接駁船最早一班是 11:00，從機場到 Ban Phe 車程約 2.5–3 小時，中間有好幾個小時的空檔。']},
         {title: '曼谷 → Ban Phe 包車', icon: '車', paras: ['車程約 2.5–3.5 小時，尖峰更久。15 人加行李通常要 2 台 van。']},
         {place: 'banphe'},
         {title: '搭船上島', icon: '船', paras: ['飯店接駁船 11:00／13:30／16:00；錯過末班就要包快艇（7–18 人每艘單程 5,000 泰銖）。']},
         {place: 'nadan'}, {place: 'seaqueen'}, {place: 'baanploy'}, {place: 'saikaew'}, {place: 'aophai'}
       ],
       tips: ['每人備 300 泰銖現金付國家公園門票。', '島上便利商店與 ATM 離飯店約 850 m，防曬、水、現金先帶好。', '島上移動靠雙條車：共乘到 Sai Kaew／Ao Phai 每人約 20–60 泰銖，沒有公告價，上車前先講好。'],
-      pending: ['搭哪一班船（或包快艇）', '海灘酒吧／夕陽地點']},
+      pending: ['凌晨抵達後到搭船前怎麼安排（機場休息、提早到 Ban Phe，或包快艇早點上島）', '搭哪一班船', '海灘酒吧／夕陽地點']},
     {id: 'd13', date: '2026-12-13', title: '舊城・河岸', brief: '回曼谷，大皇宮、臥佛寺、鄭王廟', sleep: 'ratchada',
       summary: '上午搭船、包車回曼谷，下午走大皇宮、臥佛寺、鄭王廟，傍晚在 Supanniga 看夕陽吃晚餐，之後到 ICONSIAM。',
       steps: [
@@ -175,16 +180,16 @@ window.GUIDE = {
       ],
       tips: ['最後一晚：先把退稅單與護照整理好，隔天直接帶去機場。', 'BTS 末班車約 24:00，建議 23:00 前進站，不然就叫車。'],
       pending: ['按摩店家', 'Rooftop 店家']},
-    {id: 'd16', date: '2026-12-16', title: 'Siam・BKK', brief: '最後採買，前往機場', sleep: null,
-      summary: '11:00 前退房，最後採買後前往蘇凡納布機場。',
+    {id: 'd16', date: '2026-12-16', title: '採買・回程', brief: 'Big C 採買，14:05 班機回台', sleep: null,
+      summary: '早上到 Big C 做最後採買，10:30 從住宿出發往蘇凡納布機場，搭 14:05 的 CI832 回桃園。',
       steps: [
-        {title: '退房', icon: '住', time: '11:00 前', paras: ['Ratchada Retreat 11:00 前退房。']},
-        {place: 'bigc'}, {place: 'paragon'}, {place: 'central'},
-        {title: '前往機場', icon: '車', time: '10:30', paras: ['原定 10:30 出發。15 人加行李請預訂 2 台 van。']},
-        {place: 'airport'}
+        {place: 'bigc'},
+        {title: '退房、前往機場', icon: '車', time: '10:30', paras: ['Ratchada Retreat 11:00 前退房。15 人加行李請預訂 2 台 van，10:30 出發，約 11:30 前到機場。']},
+        {place: 'airport'},
+        {title: 'CI832 起飛', icon: '機', time: '14:05', paras: ['中華航空 CI832，18:40 抵達桃園。']}
       ],
-      tips: ['時間衝突：原定 10:30 往機場，但百貨 10:00 才開門，只有 Big C（09:00 開）來得及。請依班機時間決定要不要保留 Siam 採買。', '退稅商品與護照、P.P.10 表單放隨身，不要託運前就封箱。'],
-      pending: ['班機時間與出發往機場的時間', 'Siam 採買是否保留']}
+      tips: ['Siam Paragon、CentralWorld 10:00 才開門，趕不上 10:30 出發，所以這天只排 Big C（09:00 開門）。想逛百貨請排在 12/14 或 12/15。', 'Big C 也很趕：從住宿過去單程約 20 分鐘，實際只能買到 10:00 左右。Big C 開到深夜，前一晚先去買比較從容。', '退稅商品與護照、P.P.10 表單放隨身，不要託運前就封箱。'],
+      pending: ['Big C 排前一晚或當天早上']}
   ],
 
   quick: [
@@ -192,14 +197,16 @@ window.GUIDE = {
     {title: '回住宿', text: 'Ratchada Retreat 地址與導航', href: '#stay/ratchada'},
     {title: '捷運怎麼搭', text: '從住宿到各商圈', href: '#move/routes'},
     {title: '沙美島船班', text: '飯店接駁船與公船', href: '#move/boat'},
-    {title: '機場', text: '車程與提前多久到', href: '#move/airport'},
+    {title: '班機', text: '去 CI837 22:30・回 CI832 14:05', href: '#move/flights'},
     {title: '入境 TDAC', text: '抵達前 3 天內線上填', href: '#info/entry'},
     {title: '退稅', text: '滿 2,000 泰銖・P.P.10', href: '#info/vat'},
     {title: '寺廟服裝', text: '遮肩遮膝、好穿脫的鞋', href: '#info/temple'}
   ],
 
   todo: [
-    {id: 'todo-tdac', text: '每個人：抵達日前 3 天內線上填好 TDAC'},
+    {id: 'todo-tdac', text: '每個人：出國前 72 小時內線上填好 TDAC（12/9 起可填），留存確認信'},
+    {id: 'todo-cash', text: '每個人：隨身帶新臺幣 20,000 或等值現金，入境可能抽查財力'},
+    {id: 'todo-arrive', text: '決定 12/12 凌晨抵達後到搭船前的安排'},
     {id: 'todo-passport', text: '每個人：護照效期 6 個月以上'},
     {id: 'todo-van12', text: '預訂 12/12 往 Ban Phe、12/13 回曼谷的包車（2 台 van）'},
     {id: 'todo-boat', text: '向 Baan Ploy Sea 登記 15 人船班，或包快艇'},
@@ -207,7 +214,7 @@ window.GUIDE = {
     {id: 'todo-supanniga', text: 'Supanniga Tha Tien 訂 15 人晚餐'},
     {id: 'todo-topgolf', text: 'Topgolf 訂 3 個打位'},
     {id: 'todo-massage', text: '12/15 按摩與 Rooftop 選店、預約'},
-    {id: 'todo-van16', text: '預訂 12/16 往機場的車，確認出發時間'},
+    {id: 'todo-van16', text: '預訂 12/16 10:30 往機場的車（2 台 van）'},
     {id: 'todo-host', text: '向 Ratchada Retreat 房東確認入住方式與聯絡窗口'}
   ],
 
@@ -239,13 +246,16 @@ window.GUIDE = {
       {id: 'island', title: '島上交通與門票', facts: [['雙條車', '共乘到 Sai Kaew／Ao Phai 每人約 20–60 泰銖；包車到南部海灘 200–600 泰銖'], ['租機車', 'Na Dan 碼頭附近每日約 400 泰銖起'], ['國家公園門票', '外國成人 200 或 300 泰銖，請備 300 泰銖現金']], tips: ['雙條車沒有公告價，上車前先講好。', '島上路陡且多沙，不熟機車不要騎。']}
     ]},
     {id: 'airport', title: '機場', cards: [
-      {id: 'bkk', title: '蘇凡納布機場 BKK', facts: [['從 Ratchada 搭車', '不塞車推估 40–60 分鐘；尖峰（07:00–09:30、16:00–19:00）可能加倍'], ['大眾運輸', 'MRT 轉機場快線約 35–50 分鐘（帶行李較辛苦）'], ['建議', '起飛前 3–4 小時從住宿出發'], ['計程車', '機場排班跳表車另加 50 泰銖機場費與過路費']], tips: ['要退稅的人再多抓 30 分鐘。', '回程 12/16 原定 10:30 出發，請依班機時間回推。']}
+      {id: 'flights', title: '班機', sub: '中華航空・桃園 TPE 第一航廈 ↔ 蘇凡納布 BKK',
+        facts: [['去程 CI837', '12/11（五）22:30 桃園起飛 → 12/12（六）01:35 抵達曼谷'], ['回程 CI832', '12/16（三）14:05 曼谷起飛 → 18:40 抵達桃園']],
+        tips: ['時間皆為當地時間，曼谷比台灣慢 1 小時。', '回程 10:30 從住宿出發，約 11:30 前到機場；要退稅的人不要再晚。']},
+      {id: 'bkk', title: '蘇凡納布機場 BKK', facts: [['從 Ratchada 搭車', '不塞車推估 40–60 分鐘；尖峰（07:00–09:30、16:00–19:00）可能加倍'], ['大眾運輸', 'MRT 轉機場快線約 35–50 分鐘（帶行李較辛苦）'], ['建議', '起飛前 3–4 小時從住宿出發'], ['計程車', '機場排班跳表車另加 50 泰銖機場費與過路費']], tips: ['要退稅的人再多抓 30 分鐘。', '回程 12/16 班機 14:05 起飛，10:30 從住宿出發。', '去程 12/12 凌晨 01:35 抵達，深夜的包車請事先訂好。']}
     ]}
   ],
 
   info: [
     {id: 'before', title: '入境與出發前', cards: [
-      {id: 'entry', title: '入境泰國', facts: [['簽證', '台灣護照免簽 30 天（2026/9/15 起由 60 天改為 30 天）'], ['護照', '效期 6 個月以上'], ['TDAC', '所有外國旅客必填、免費；抵達前 3 天內（含抵達日）線上填']], warn: 'TDAC 只在官方網站 tdac.immigration.go.th 填寫，搜尋結果裡收費的都是代辦或仿冒網站。', links: [['TDAC 官方網站', 'https://tdac.immigration.go.th']]},
+      {id: 'entry', title: '入境泰國', facts: [['簽證', '台灣護照免簽 30 天（2026/9/15 起由 60 天改為 30 天）'], ['護照', '效期 6 個月以上'], ['TDAC', '所有外國旅客必填、免費；出國前 72 小時內線上填，入境時出示系統確認信'], ['財力抽查', '入境可能抽查，身上需有新臺幣 20,000 或等值貨幣的現金']], warn: 'TDAC 只在官方網站 tdac.immigration.go.th 填寫，搜尋結果裡收費的都是代辦或仿冒網站。', links: [['TDAC 官方網站', 'https://tdac.immigration.go.th/arrival-card/#/home'], ['泰國觀光局入境說明', 'https://www.tattpe.org.tw/HowToGo.html']]},
       {id: 'weather', title: '12 月中天氣', facts: [['曼谷', '約 21–32°C，乾季、少雨'], ['沙美島', '約 24–30°C，海水約 28°C']], tips: ['白天熱、百貨與捷運冷氣強，帶一件薄外套。', '防曬、帽子、太陽眼鏡必備。']},
       {id: 'power', title: '電壓與插座', paras: ['220V／50Hz。台灣兩扁腳插頭通常可以直接插，但電器本身要支援 220V（手機、筆電充電器一般都支援；吹風機、離子夾要看標示）。']}
     ]},
