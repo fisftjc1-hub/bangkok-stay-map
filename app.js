@@ -248,7 +248,7 @@ window.TripMapInit = () => {
       googleMap.render({homes:data.homes,places:visiblePlaces(),areas:visibleAreas().map(a=>({...a,selected:a.id===selectedArea})),center:roadCenter(),pairs:roadPairs(),resultFor:roadResult,showRoutes,activeRoad,fitPoints:points,closeup:place || closeup&&selectedHome}).catch(error=>{errorPanel.textContent='Google 地圖暫時無法載入';errorPanel.hidden=false;});
     } else {
       drawMovement(); routeMap.invalidateSize();
-      const view=place?{...place,zoom:16}:closeup&&selectedHome?{...selectedHome,zoom:15}:null;
+      const view=place?{...place,zoom:15}:closeup&&selectedHome?{...selectedHome,zoom:15}:null;
       if (place || closeup && selectedHome) routeMap.flyTo([view.lat,view.lng],view.zoom,{animate:!reducedMotion,duration:.6});
       else routeMap.flyToBounds(L.latLngBounds(points.map(p=>[p.lat,p.lng])),{padding:[35,35],maxZoom:14,animate:!reducedMotion,duration:.65});
     }
@@ -389,7 +389,7 @@ window.TripMapInit = () => {
   window.TripMap={
     refresh:()=>updateMap(),
     day:id=>selectDay(id),
-    place:id=>{const day=itinerary.days.find(d=>d.stops.includes(id));if(day&&!visiblePlaces().some(p=>p.id===id))selectDay(day.id);const place=visiblePlaces().find(p=>p.id===id);if(place)focusPlace(place);},
+    place:id=>{const day=itinerary.days.find(d=>d.stops.includes(id));if(day?.scope==='samet'){selectedPlace=null;selectedHome=null;mapLabel.textContent=itinerary.places[id].name;selectDay(day.id);updateMap(false,itinerary.places[id]);return;}if(day&&!visiblePlaces().some(p=>p.id===id))selectDay(day.id);const place=visiblePlaces().find(p=>p.id===id);if(place)focusPlace(place);},
     home:id=>{const home=data.homes.find(h=>h.id===id);if(home)focusHome(home);}
   };
 };

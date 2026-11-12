@@ -161,6 +161,14 @@ window.ITINERARY_DATA = {
       "source": "https://www.openstreetmap.org/node/2078709709",
       "google": "https://www.google.com/maps/search/?api=1&query=Ban%20Phe%20Pier%20Rayong"
     },
+    "seaqueen": {
+      "id": "seaqueen",
+      "name": "SEAQUEEN The Pool（住宿）",
+      "lat": 12.5738074,
+      "lng": 101.464078,
+      "google": "https://www.google.com/maps/search/?api=1&query=SEAQUEEN%20The%20Pool%20Koh%20Samed",
+      "source": "https://www.google.com/maps/place/?q=place_id:ChIJoz-RPOQHAzERORURT2og1oQ"
+    },
     "asok": {
       "id": "asok",
       "name": "Ratchada Retreat",
@@ -188,6 +196,7 @@ window.ITINERARY_DATA = {
       "stops": [
         "banphe",
         "nadan",
+        "seaqueen",
         "baanploy",
         "saikaew",
         "aophai"
@@ -505,6 +514,164 @@ window.ITINERARY_DATA = {
           ],
           "members": [
             "baanploy"
+          ]
+        },
+        {
+          "id": "nadan",
+          "name": "Na Dan・SEAQUEEN",
+          "coordinates": [
+            [
+              101.465825,
+              12.5743
+            ],
+            [
+              101.465794,
+              12.574643
+            ],
+            [
+              101.465703,
+              12.574976
+            ],
+            [
+              101.465554,
+              12.575288
+            ],
+            [
+              101.465351,
+              12.57557
+            ],
+            [
+              101.465102,
+              12.575814
+            ],
+            [
+              101.464812,
+              12.576012
+            ],
+            [
+              101.464493,
+              12.576157
+            ],
+            [
+              101.464152,
+              12.576246
+            ],
+            [
+              101.4638,
+              12.576276
+            ],
+            [
+              101.463448,
+              12.576246
+            ],
+            [
+              101.463107,
+              12.576157
+            ],
+            [
+              101.462788,
+              12.576012
+            ],
+            [
+              101.462498,
+              12.575814
+            ],
+            [
+              101.462249,
+              12.57557
+            ],
+            [
+              101.462046,
+              12.575288
+            ],
+            [
+              101.461897,
+              12.574976
+            ],
+            [
+              101.461806,
+              12.574643
+            ],
+            [
+              101.461775,
+              12.5743
+            ],
+            [
+              101.461806,
+              12.573957
+            ],
+            [
+              101.461897,
+              12.573624
+            ],
+            [
+              101.462046,
+              12.573312
+            ],
+            [
+              101.462249,
+              12.57303
+            ],
+            [
+              101.462498,
+              12.572786
+            ],
+            [
+              101.462788,
+              12.572588
+            ],
+            [
+              101.463107,
+              12.572443
+            ],
+            [
+              101.463448,
+              12.572354
+            ],
+            [
+              101.4638,
+              12.572324
+            ],
+            [
+              101.464152,
+              12.572354
+            ],
+            [
+              101.464493,
+              12.572443
+            ],
+            [
+              101.464812,
+              12.572588
+            ],
+            [
+              101.465102,
+              12.572786
+            ],
+            [
+              101.465351,
+              12.57303
+            ],
+            [
+              101.465554,
+              12.573312
+            ],
+            [
+              101.465703,
+              12.573624
+            ],
+            [
+              101.465794,
+              12.573957
+            ],
+            [
+              101.465825,
+              12.5743
+            ]
+          ],
+          "members": [
+            "nadan",
+            "seaqueen"
           ]
         },
         {
@@ -833,6 +1000,7 @@ window.ITINERARY_DATA = {
         {
           "stops": [
             "nadan",
+            "seaqueen",
             "baanploy",
             "saikaew",
             "aophai"
@@ -840,7 +1008,7 @@ window.ITINERARY_DATA = {
           "mode": "local"
         }
       ],
-      "note": "當晚住島上 Baan Ploy Sea（Ao Noi Na）；飯店接駁船由 Ban Phe 的 Ao Prao Pier 出發。",
+      "note": "當晚住島上 Baan Ploy Sea（Ao Noi Na）與 SEAQUEEN The Pool（Na Dan 碼頭旁）；飯店接駁船由 Ban Phe 的 Ao Prao Pier 出發。",
       "pending": [
         "船班：未定",
         "海灘酒吧／夕陽地點：未定"

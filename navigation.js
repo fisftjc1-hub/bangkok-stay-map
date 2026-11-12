@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const colors=['#2878b8','#bc6d20','#238c78','#8259a9','#b64e76','#527fa6','#75843c','#8b6550'];
-  const islandIds=new Set(['saikaew','aophai','nadan','baanploy']);
+  const islandIds=new Set(['saikaew','aophai','nadan','baanploy','seaqueen']);
   const drivingIds=new Set(['airport','banphe']);
   const travelMode=(origin,destination)=>drivingIds.has(origin.id)||drivingIds.has(destination.id)||islandIds.has(origin.id)||islandIds.has(destination.id)?'DRIVING':'TRANSIT';
   function uniquePlaces(days,places) {

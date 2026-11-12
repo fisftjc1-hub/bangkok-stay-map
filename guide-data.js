@@ -12,19 +12,19 @@ window.GUIDE = {
       when: '12/13–12/16 · 3 晚', who: '全團',
       query: 'Ratchada Retreat Boutique Suites', placeId: 'ChIJu2qNA6ef4jARC7qjW5LbJAA', lat: 13.7628673, lng: 100.5634893,
       address: '582/30 Thanon Asok-Din Daeng, Din Daeng, Bangkok 10400',
-      addressTh: 'ถนนอโศก-ดินแดง เขตดินแดง กรุงเทพฯ（Asok-Din Daeng 路；門牌 582/30）',
+      addressTh: '582/30 ถ. อโศก - ดินแดง แขวงดินแดง เขตดินแดง กรุงเทพมหานคร 10400',
+      phone: '+66 83 847 2513',
       facts: [
         ['入住', '15:00 後（12/13）'],
         ['退房', '11:00 前（12/16）'],
-        ['最近捷運', 'MRT 藍線 Phra Ram 9（BL20），步行約 10–12 分鐘（約 850 m）'],
-        ['聯絡電話', '請看訂房確認信（公開資料查不到可靠的電話）']
+        ['最近捷運', 'MRT 藍線 Phra Ram 9（BL20），步行約 10–12 分鐘（約 850 m）']
       ],
       notes: [
         '步行約 9 分鐘可到 Central Rama 9 百貨（超市、美食街、換匯）。',
         '往北約 1 km 是 MRT Thailand Cultural Centre 站一帶的夜市與 Esplanade。',
         '同一業主另有名稱相近的物業（Boutique Homestay、Bespoke Urban Villa），叫車時請認明地址 582/30 Asok-Din Daeng。'
       ],
-      warn: '完整泰文地址與電話未能從公開資料確認；上面的泰文只有路名，建議入住前向房東要一份泰文地址存在手機。',
+      warn: '電話與泰文地址取自 Google 地圖商家資料（2026/11/12）；入住方式與聯絡窗口仍以訂房確認信為準。',
       links: [['Booking 頁面', 'https://www.booking.com/hotel/th/ratchada-retreat-boutique-suites.html']]
     },
     {
@@ -52,19 +52,20 @@ window.GUIDE = {
       links: [['飯店官網', 'https://www.baanploysea.com/'], ['接駁船說明', 'https://www.baanploysea.com/transportation/'], ['Ao Prao Pier 位置', 'https://goo.gl/maps/q6UnTsFds2mRZZme7']]
     },
     {
-      id: 'seaqueen',
+      id: 'seaqueen', mapPlace: 'seaqueen',
       name: 'SEAQUEEN The Pool, Koh Samed', short: 'SEAQUEEN The Pool', zh: '沙美島・Na Dan 碼頭附近',
       when: '12/12 · 1 晚', who: '部分成員',
-      query: 'SEAQUEEN The Pool Koh Samed',
-      address: 'No. 8, Koh Samet, Rayong 21160（國家公園售票處旁約 170 m，Sai Kaew Beach 約 750 m）',
+      query: 'SEAQUEEN The Pool Koh Samed', lat: 12.5738074, lng: 101.464078,
+      address: 'No. 8, Na Dan Pier, Koh Samet, Phe, Rayong 21160（Na Dan 碼頭旁，Sai Kaew Beach 約 750 m）',
+      addressTh: 'เลขที่ 8 ท่าเรือหน้าด่าน เกาะเสม็ด ตำบลเพ เมือง ระยอง 21160',
       phone: '+66 94 956 4850',
       facts: [
         ['入住', '14:00 起（21:00 後抵達請前一天告知）'],
         ['退房', '11:30 或 12:00（各訂房站寫法不同，再確認）'],
         ['接駁', '飯店不提供接駁；由 Na Dan 碼頭步行或搭雙條車'],
-        ['與 Baan Ploy Sea', '同在島北端，推估相距 1 km 內，步行 10–15 分鐘或搭雙條車']
+        ['與 Baan Ploy Sea', '直線約 0.8 km，步行約 15 分鐘或搭雙條車'],
+        ['與 Na Dan 碼頭', '直線約 150 m，下船走路就到']
       ],
-      warn: '精確位置請以 Google 地圖上的店家標記為準；本站地圖沒有標這間。',
       links: [['Booking 頁面', 'https://www.booking.com/hotel/th/seaqueen-the-pool-koh-samed.html']]
     }
   ],
@@ -82,8 +83,10 @@ window.GUIDE = {
     nadan: {noTransit: true, brief: '沙美島主要碼頭；回程接駁船在這裡上船',
       facts: [['回程飯店船', '10:00／12:30／15:00 → Ao Prao Pier'], ['公船', '往 Ban Phe 約 08:00–18:00，末班時間各來源不一，再確認']],
       tips: ['碼頭附近可租機車（每日約 400 泰銖起）、搭雙條車。', '國家公園售票處在碼頭往 Sai Kaew 的路上。'], keywords: '碼頭 船'},
+    seaqueen: {name: 'SEAQUEEN The Pool（部分成員住宿）', query: 'SEAQUEEN The Pool Koh Samed', noTransit: true, brief: 'Na Dan 碼頭旁，14:00 起入住',
+      paras: ['離碼頭直線約 150 m，下船後可先放行李。到 Baan Ploy Sea 直線約 0.8 km。'], links: [['住宿詳情', '#stay/seaqueen']]},
     baanploy: {name: 'Baan Ploy Sea（今晚住宿）', query: 'Baan Ploy Sea Koh Samet', noTransit: true, brief: '北岸 Ao Noi Na，15:00 入住',
-      paras: ['全團住宿。SEAQUEEN The Pool 的住客在 Na Dan 碼頭附近，兩邊相距推估 1 km 內。'], links: [['住宿詳情', '#stay/baanploy']]},
+      paras: ['全團住宿。SEAQUEEN The Pool 在 Na Dan 碼頭旁，兩邊直線約 0.8 km。'], links: [['住宿詳情', '#stay/baanploy']]},
     saikaew: {noTransit: true, brief: '島上最熱鬧的白沙灘，適合游泳',
       paras: ['沙細水淺，餐廳、酒吧最集中；晚上有海灘酒吧與火舞表演。離 Baan Ploy Sea 約 1.2 km。'],
       facts: [['國家公園門票', '外國成人 200 或 300 泰銖（來源不一），請備 300 泰銖現金']],
@@ -138,7 +141,7 @@ window.GUIDE = {
         {title: '曼谷 → Ban Phe 包車', icon: '車', paras: ['車程約 2.5–3.5 小時，尖峰更久。15 人加行李通常要 2 台 van。']},
         {place: 'banphe'},
         {title: '搭船上島', icon: '船', paras: ['飯店接駁船 11:00／13:30／16:00；錯過末班就要包快艇（7–18 人每艘單程 5,000 泰銖）。']},
-        {place: 'nadan'}, {place: 'baanploy'}, {place: 'saikaew'}, {place: 'aophai'}
+        {place: 'nadan'}, {place: 'seaqueen'}, {place: 'baanploy'}, {place: 'saikaew'}, {place: 'aophai'}
       ],
       tips: ['每人備 300 泰銖現金付國家公園門票。', '島上便利商店與 ATM 離飯店約 850 m，防曬、水、現金先帶好。', '島上移動靠雙條車：共乘到 Sai Kaew／Ao Phai 每人約 20–60 泰銖，沒有公告價，上車前先講好。'],
       pending: ['搭哪一班船（或包快艇）', '海灘酒吧／夕陽地點']},
@@ -205,7 +208,7 @@ window.GUIDE = {
     {id: 'todo-topgolf', text: 'Topgolf 訂 3 個打位'},
     {id: 'todo-massage', text: '12/15 按摩與 Rooftop 選店、預約'},
     {id: 'todo-van16', text: '預訂 12/16 往機場的車，確認出發時間'},
-    {id: 'todo-host', text: '向 Ratchada Retreat 房東要泰文地址、聯絡電話與入住方式'}
+    {id: 'todo-host', text: '向 Ratchada Retreat 房東確認入住方式與聯絡窗口'}
   ],
 
   move: [
