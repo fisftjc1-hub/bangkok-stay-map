@@ -3,11 +3,14 @@
 window.GUIDE = {
   updated: '2026-11-12',
   disclaimer: '開放時間、票價、船班與法規以 2026/11/12 查到的公開資料整理，標示「再確認」者來源不一致；出發前與當天請以官方公告和訂房確認信為準。',
-  trip: {name: '曼谷・沙美島', start: '2026-12-11', end: '2026-12-16', people: 15, route: '沙美島 1 晚 → 曼谷 3 晚',
+  trip: {name: '曼谷・沙美島', start: '2026-12-11', end: '2026-12-16', people: 15, route: '沙美島 1 晚 → 曼谷 3 晚', rate: 0.98, tdacOpen: '2026-12-09',
     flights: [
       {label: '去程', code: 'CI837', date: '12/11（五）', text: '桃園 TPE 第一航廈 22:30 → 蘇凡納布 BKK 01:35（12/12）'},
       {label: '回程', code: 'CI832', date: '12/16（三）', text: '蘇凡納布 BKK 14:05 → 桃園 TPE 18:40'}
     ]},
+
+  // Shown on the always-visible emergency button.
+  sos: [['觀光警察（可說英文）', '1155'], ['救護車', '1669'], ['警察', '191'], ['駐泰辦事處急難救助', '+66 81 666 4006']],
 
   stays: [
     {
@@ -68,9 +71,10 @@ window.GUIDE = {
         ['退房', '11:30 或 12:00（各訂房站寫法不同，再確認）'],
         ['接駁', '飯店不提供接駁；由 Na Dan 碼頭步行或搭雙條車'],
         ['與 Baan Ploy Sea', '直線約 0.8 km，步行約 15 分鐘或搭雙條車'],
-        ['與 Na Dan 碼頭', '直線約 150 m，下船走路就到']
+        ['與 Na Dan 碼頭', '直線約 150 m，下船走路就到'],
+        ['和大家會合', 'Baan Ploy Sea 的人往 Sai Kaew Beach 會經過 Na Dan 碼頭，約在碼頭口最順']
       ],
-      links: [['Booking 頁面', 'https://www.booking.com/hotel/th/seaqueen-the-pool-koh-samed.html']]
+      links: [['走到 Baan Ploy Sea', 'https://www.google.com/maps/dir/?api=1&origin=12.5738074,101.464078&destination=12.57543,101.45715&travelmode=walking'], ['Booking 頁面', 'https://www.booking.com/hotel/th/seaqueen-the-pool-koh-samed.html']]
     }
   ],
   stayNotes: [
@@ -80,69 +84,69 @@ window.GUIDE = {
 
   // Extra details for the places in itinerary.js (names and coordinates come from there).
   places: {
-    banphe: {name: 'Ban Phe・Ao Prao Pier', query: 'Ao Prao Pier Ban Phe', noTransit: true, brief: '搭飯店接駁船上島的碼頭',
+    banphe: {thai: 'ท่าเรืออ่าวพร้าว บ้านเพ ระยอง', name: 'Ban Phe・Ao Prao Pier', query: 'Ao Prao Pier Ban Phe', noTransit: true, brief: '搭飯店接駁船上島的碼頭',
       facts: [['飯店船班', '11:00／13:30／16:00（Baan Ploy Sea 接駁船）'], ['碼頭電話', '+66 38 651 134'], ['碼頭時間', '每日 07:00–18:00'], ['船資', '來回成人 340 泰銖']],
       tips: ['出發前 30 分鐘到碼頭報到。', '地圖上的標記是 Ban Phe 碼頭區的概略位置，實際上船處請用「Ao Prao Pier 位置」連結。', '住 SEAQUEEN 的人也可改搭 Nuan Thip 碼頭的公船到 Na Dan（單程約 50 泰銖，約每小時一班，船滿才開）。'],
       links: [['Ao Prao Pier 位置', 'https://goo.gl/maps/q6UnTsFds2mRZZme7']], keywords: '碼頭 船 接駁 Nuan Thip'},
-    nadan: {noTransit: true, brief: '沙美島主要碼頭；回程接駁船在這裡上船',
+    nadan: {thai: 'ท่าเรือหน้าด่าน เกาะเสม็ด', noTransit: true, brief: '沙美島主要碼頭；回程接駁船在這裡上船',
       facts: [['回程飯店船', '10:00／12:30／15:00 → Ao Prao Pier'], ['公船', '往 Ban Phe 約 08:00–18:00，末班時間各來源不一，再確認']],
       tips: ['碼頭附近可租機車（每日約 400 泰銖起）、搭雙條車。', '國家公園售票處在碼頭往 Sai Kaew 的路上。'], keywords: '碼頭 船'},
     seaqueen: {name: 'SEAQUEEN The Pool（部分成員住宿）', query: 'SEAQUEEN The Pool Koh Samed', noTransit: true, brief: 'Na Dan 碼頭旁，14:00 起入住',
       paras: ['離碼頭直線約 150 m，下船後可先放行李。到 Baan Ploy Sea 直線約 0.8 km。'], links: [['住宿詳情', '#stay/seaqueen']]},
     baanploy: {name: 'Baan Ploy Sea（今晚住宿）', query: 'Baan Ploy Sea Koh Samet', noTransit: true, brief: '北岸 Ao Noi Na，15:00 入住',
       paras: ['全團住宿。SEAQUEEN The Pool 在 Na Dan 碼頭旁，兩邊直線約 0.8 km。'], links: [['住宿詳情', '#stay/baanploy']]},
-    saikaew: {noTransit: true, brief: '島上最熱鬧的白沙灘，適合游泳',
+    saikaew: {thai: 'หาดทรายแก้ว', noTransit: true, brief: '島上最熱鬧的白沙灘，適合游泳',
       paras: ['沙細水淺，餐廳、酒吧最集中；晚上有海灘酒吧與火舞表演。離 Baan Ploy Sea 約 1.2 km。'],
       facts: [['國家公園門票', '外國成人 200 或 300 泰銖（來源不一），請備 300 泰銖現金']],
       tips: ['售票處可能不收卡。', '票根留著，進出海灘可能會查。'], keywords: '海灘 火舞 酒吧 門票'},
-    aophai: {noTransit: true, brief: 'Sai Kaew 南邊步行約 10 分鐘，稍微安靜', paras: ['一樣有海灘酒吧與火舞，但人比 Sai Kaew 少，適合看夕陽後續攤。'], keywords: '海灘 酒吧 夕陽'},
+    aophai: {thai: 'อ่าวไผ่', noTransit: true, brief: 'Sai Kaew 南邊步行約 10 分鐘，稍微安靜', paras: ['一樣有海灘酒吧與火舞，但人比 Sai Kaew 少，適合看夕陽後續攤。'], keywords: '海灘 酒吧 夕陽'},
 
-    palace: {query: 'Grand Palace Bangkok', brief: '外國人 500 泰銖・15:30 前入場',
+    palace: {thai: 'พระบรมมหาราชวัง', query: 'Grand Palace Bangkok', brief: '外國人 500 泰銖・15:30 前入場',
       facts: [['售票／入場', '08:30–15:30（官網關門時間寫法不一，請 15:30 前進場）'], ['門票', '500 泰銖，含玉佛寺；線上票不可退改'], ['入口', 'Mani Noppharat 門'], ['最近車站', 'MRT Sanam Chai 步行約 15 分鐘；或 Tha Chang 碼頭']],
       tips: ['服裝要遮肩、遮膝：不可無袖、短褲、短裙、破褲。', '門口附近自稱「今天休館」來搭話的人不要理，直接走到售票處。'],
       warn: '2026 年 8 月曾因王室儀式縮短開放並加嚴服裝規定，12 月是否仍受影響未確認，出發前看官網公告。',
       links: [['官方購票', 'https://www.royalgrandpalace.th/en/buy-ticket']], keywords: '大皇宮 門票 服裝 寺廟'},
-    emerald: {query: 'Wat Phra Kaew Bangkok', brief: '在大皇宮內，同一張門票', paras: ['玉佛寺位於大皇宮範圍內，不需另外購票。殿內不可拍照，進殿需脫鞋。'], keywords: '玉佛寺 寺廟'},
-    watpho: {query: 'Wat Pho Bangkok', brief: '300 泰銖・08:00–19:30',
+    emerald: {thai: 'วัดพระแก้ว', query: 'Wat Phra Kaew Bangkok', brief: '在大皇宮內，同一張門票', paras: ['玉佛寺位於大皇宮範圍內，不需另外購票。殿內不可拍照，進殿需脫鞋。'], keywords: '玉佛寺 寺廟'},
+    watpho: {thai: 'วัดโพธิ์ ท่าเตียน', query: 'Wat Pho Bangkok', brief: '300 泰銖・08:00–19:30',
       facts: [['開放', '08:00–19:30'], ['門票', '300 泰銖'], ['最近車站', 'MRT Sanam Chai 1 號出口，步行 3–10 分鐘']],
       tips: ['不可穿短褲，需穿著得體。', '寺內有著名的泰式按摩學校，想按要現場排。'], links: [['官方資訊', 'https://watpho.com/en/contact/plan']], keywords: '臥佛寺 門票 按摩 寺廟'},
-    watarun: {query: 'Wat Arun Bangkok', brief: '對岸；從 Tha Tien 搭渡船過河',
+    watarun: {thai: 'วัดอรุณ', query: 'Wat Arun Bangkok', brief: '對岸；從 Tha Tien 搭渡船過河',
       facts: [['開放', '約 08:00–18:00，最後入場約 17:30（再確認）'], ['門票', '多數資料寫 200 泰銖（再確認）'], ['過河渡船', 'Tha Tien 碼頭上船，約 5–8 泰銖，請備零錢；約營運到 18:00']],
       tips: ['遮肩遮膝，門口可借沙龍。', '塔上階梯很陡，穿好走的鞋。', '傍晚從對岸（Tha Tien 一側）看夕陽最漂亮。'], keywords: '鄭王廟 渡船 門票 夕陽 寺廟'},
-    supanniga: {query: 'Supanniga Eating Room Tha Tien', brief: '河景泰菜・15 人請先訂位',
+    supanniga: {thai: 'ร้านสุพรรณิการ์ อีทติ้งรูม ท่าเตียน', query: 'Supanniga Eating Room Tha Tien', brief: '河景泰菜・15 人請先訂位',
       facts: [['地址', '392/25-26 Maha Rat Rd'], ['電話', '+66 92 253 9251'], ['營業', '約 11:00–22:00（各來源略有出入，另有一說週一公休，再確認）']],
-      tips: ['頂樓可看鄭王廟夕陽，晚餐時段要先訂。', '可電話、米其林指南頁面或 Klook 套餐訂位。'],
+      tips: ['頂樓可看鄭王廟夕陽，晚餐時段要先訂。12 月中日落約 17:50，想看夕陽請訂 17:00–17:15 入座。', '可電話、米其林指南頁面或 Klook 套餐訂位。'],
       links: [['米其林頁面', 'https://guide.michelin.com/en/bangkok-region/bangkok/restaurant/supanniga-eating-room-tha-tian']], keywords: '餐廳 晚餐 訂位 泰菜'},
-    iconsiam: {query: 'ICONSIAM', brief: '河岸百貨・10:00–22:00',
+    iconsiam: {thai: 'ไอคอนสยาม', query: 'ICONSIAM', brief: '河岸百貨・10:00–22:00',
       facts: [['營業', '10:00–22:00'], ['接駁船', 'Sathorn 碼頭（BTS Saphan Taksin）出發，約 8–12 泰銖，每 15–20 分鐘一班'], ['捷運', '金線 Charoen Nakhon 站有連通道']],
       tips: ['G 樓 SookSiam 是室內水上市場風格的小吃區。', '回 Ratchada 人多時直接叫車最省事。'], keywords: '百貨 購物 接駁船'},
-    paragon: {query: 'Siam Paragon', brief: 'BTS Siam 直通・10:00–22:00', facts: [['營業', '每日 10:00–22:00'], ['最近車站', 'BTS Siam 直通']], tips: ['地下樓 Gourmet Market 適合買伴手禮；同店同日滿 2,000 泰銖可辦退稅。'], keywords: '百貨 購物 伴手禮 退稅'},
-    central: {query: 'CentralWorld Bangkok', brief: '空橋連 Siam 與 Chit Lom・10:00–22:00', facts: [['營業', '10:00–22:00'], ['最近車站', 'BTS Chit Lom 或 Siam，走空橋']], keywords: '百貨 購物'},
-    erawan: {query: 'Erawan Shrine Bangkok', brief: '免費・BTS Chit Lom 8 號出口',
+    paragon: {thai: 'สยามพารากอน', query: 'Siam Paragon', brief: 'BTS Siam 直通・10:00–22:00', facts: [['營業', '每日 10:00–22:00'], ['最近車站', 'BTS Siam 直通']], tips: ['地下樓 Gourmet Market 適合買伴手禮；同店同日滿 2,000 泰銖可辦退稅。'], keywords: '百貨 購物 伴手禮 退稅'},
+    central: {thai: 'เซ็นทรัลเวิลด์', query: 'CentralWorld Bangkok', brief: '空橋連 Siam 與 Chit Lom・10:00–22:00', facts: [['營業', '10:00–22:00'], ['最近車站', 'BTS Chit Lom 或 Siam，走空橋']], keywords: '百貨 購物'},
+    erawan: {thai: 'ศาลพระพรหมเอราวัณ', query: 'Erawan Shrine Bangkok', brief: '免費・BTS Chit Lom 8 號出口',
       facts: [['開放', '約 06:00–22:00（有來源寫到 24:00）'], ['費用', '免費；供品現場購買'], ['最近車站', 'BTS Chit Lom 8 號出口約 100 m']],
       tips: ['順時針拜四面；穿著端莊即可。', '供品在神壇內的攤位買，路邊兜售的較貴。'], keywords: '四面佛 拜拜'},
-    mega: {query: 'Mega Bangna', driveOnly: true, brief: '大型購物中心・10:00–22:00',
+    mega: {thai: 'เมกาบางนา', query: 'Mega Bangna', driveOnly: true, brief: '大型購物中心・10:00–22:00',
       facts: [['營業', '每日 10:00–22:00'], ['免費接駁車', 'BTS Udom Suk 5 號出口，7-Eleven 前站牌；約每 30 分鐘一班，車程約 40 分鐘'], ['接駁時間', 'Udom Suk 發車 08:00–22:00；商場回程 08:30–23:30']],
       tips: ['15 人從 Siam 過去建議包車或分車叫 Grab，比轉 BTS＋接駁車省時。'], links: [['官方交通說明', 'https://www.mega-bangna.com/en/service-guide/การเดินทาง/5']], keywords: '百貨 購物 接駁車 IKEA'},
-    topgolf: {query: 'Topgolf Megacity Bangkok', driveOnly: true, brief: '在 Mega Bangna 旁・按打位計時收費',
+    topgolf: {thai: 'ท็อปกอล์ฟ เมกาซิตี้ บางนา', query: 'Topgolf Megacity Bangkok', driveOnly: true, brief: '在 Mega Bangna 旁・按打位計時收費',
       facts: [['營業', '週日至週四 09:00–23:00；週五、六 09:00–24:00'], ['收費', '按打位每小時計，每打位最多 6 人；價格依星期與時段變動'], ['參考價', '舊資料每打位每小時 850–1,450 泰銖，現價再確認']],
       tips: ['15 人需要 3 個打位，務必先預約（可在 14 天前到 3 小時前訂）。', '不需要自備球具。'], keywords: '高爾夫 預約'},
-    terminal: {query: 'Terminal 21 Asok', brief: 'MRT Sukhumvit／BTS Asok 直通・10:00–22:00', facts: [['營業', '10:00–22:00'], ['從住宿', 'MRT Phra Ram 9 搭 2 站到 Sukhumvit，約 5 分鐘']], tips: ['5 樓 Pier 21 美食街便宜又多選擇，先在櫃台儲值卡片。'], keywords: '百貨 購物 美食街'},
-    emsphere: {query: 'EmSphere Bangkok', brief: 'BTS Phrom Phong・週五六開到 24:00', facts: [['營業', '週日至週四 10:00–22:00；週五、六 10:00–24:00'], ['最近車站', 'BTS Phrom Phong']], keywords: '百貨 購物'},
-    emquartier: {query: 'EmQuartier Bangkok', brief: 'BTS Phrom Phong 直通・10:00–22:00', facts: [['營業', '10:00–22:00'], ['最近車站', 'BTS Phrom Phong 直通']], keywords: '百貨 購物'},
-    bigc: {query: 'Big C Ratchadamri', brief: '零食伴手禮採買・09:00 開門',
+    terminal: {thai: 'เทอร์มินอล 21 อโศก', query: 'Terminal 21 Asok', brief: 'MRT Sukhumvit／BTS Asok 直通・10:00–22:00', facts: [['營業', '10:00–22:00'], ['從住宿', 'MRT Phra Ram 9 搭 2 站到 Sukhumvit，約 5 分鐘']], tips: ['5 樓 Pier 21 美食街便宜又多選擇，先在櫃台儲值卡片。'], keywords: '百貨 購物 美食街'},
+    emsphere: {thai: 'เอ็มสเฟียร์', query: 'EmSphere Bangkok', brief: 'BTS Phrom Phong・週五六開到 24:00', facts: [['營業', '週日至週四 10:00–22:00；週五、六 10:00–24:00'], ['最近車站', 'BTS Phrom Phong']], keywords: '百貨 購物'},
+    emquartier: {thai: 'เอ็มควอเทียร์', query: 'EmQuartier Bangkok', brief: 'BTS Phrom Phong 直通・10:00–22:00', facts: [['營業', '10:00–22:00'], ['最近車站', 'BTS Phrom Phong 直通']], keywords: '百貨 購物'},
+    bigc: {thai: 'บิ๊กซี ราชดำริ', query: 'Big C Ratchadamri', brief: '零食伴手禮採買・09:00 開門',
       facts: [['營業', '09:00 起，多數資料寫到凌晨 02:00（關門時間再確認）'], ['退稅', '同日滿 2,000 泰銖，憑護照到店內退稅櫃台開 P.P.10 表單'], ['最近車站', 'BTS Chit Lom']],
       tips: ['退稅櫃台樓層各來源不一，到場直接問。', '比百貨早開門，適合放在最後一天早上。'], keywords: '超市 伴手禮 零食 退稅'},
-    airport: {query: 'Suvarnabhumi Airport Departures', driveOnly: true, brief: '蘇凡納布 BKK・回程',
+    airport: {thai: 'สนามบินสุวรรณภูมิ ขาออก', query: 'Suvarnabhumi Airport Departures', driveOnly: true, brief: '蘇凡納布 BKK・回程',
       facts: [['班機', 'CI832 14:05 起飛，18:40 抵達桃園'], ['出發', '10:30 從住宿出發，約 11:30 前到機場'], ['車程', '不塞車推估 40–60 分鐘；尖峰（07:00–09:30、16:00–19:00）可能加倍']],
       tips: ['退稅金額滿 20,000 泰銖的人，報到前先到海關檢查櫃台驗貨。', '過移民關後到 VAT Refund 辦公室領款。'], links: [['退稅流程', '#info/vat'], ['機場交通', '#move/airport']], keywords: '機場 退稅 回程'}
   },
 
   days: [
-    {id: 'd12', date: '2026-12-12', title: '沙美島', brief: '包車到 Ban Phe，搭船上島', sleep: 'baanploy',
+    {id: 'd12', date: '2026-12-12', title: '沙美島', brief: '包車到 Ban Phe，搭船上島', sleep: 'baanploy', sun: '沙美島日落約 17:50',
       summary: '凌晨 01:35 抵達曼谷，包車到 Ban Phe，從 Ao Prao Pier 搭飯店接駁船上島，入住 Baan Ploy Sea，下午到傍晚在 Sai Kaew Beach 與 Ao Phai。',
       steps: [
-        {title: '抵達蘇凡納布機場 BKK', icon: '機', time: '01:35', paras: ['中華航空 CI837，12/11（五）22:30 從桃園第一航廈起飛。入境、領行李後大約 02:30–03:00 才出得了機場。', '飯店接駁船最早一班是 11:00，從機場到 Ban Phe 車程約 2.5–3 小時，中間有好幾個小時的空檔。']},
+        {title: '抵達蘇凡納布機場 BKK', icon: '機', time: '01:35', paras: ['中華航空 CI837，12/11（五）22:30 從桃園第一航廈起飛。入境、領行李後大約 02:30–03:00 才出得了機場。', '飯店接駁船最早一班是 11:00，從機場到 Ban Phe 車程約 2.5–3 小時，中間有好幾個小時的空檔。'], links: [['落地流程清單', '#info/arrive']]},
         {title: '曼谷 → Ban Phe 包車', icon: '車', paras: ['車程約 2.5–3.5 小時，尖峰更久。15 人加行李通常要 2 台 van。']},
         {place: 'banphe'},
         {title: '搭船上島', icon: '船', paras: ['飯店接駁船 11:00／13:30／16:00；錯過末班就要包快艇（7–18 人每艘單程 5,000 泰銖）。']},
@@ -150,7 +154,7 @@ window.GUIDE = {
       ],
       tips: ['每人備 300 泰銖現金付國家公園門票。', '島上便利商店與 ATM 離飯店約 850 m，防曬、水、現金先帶好。', '島上移動靠雙條車：共乘到 Sai Kaew／Ao Phai 每人約 20–60 泰銖，沒有公告價，上車前先講好。'],
       pending: ['凌晨抵達後到搭船前怎麼安排（機場休息、提早到 Ban Phe，或包快艇早點上島）', '搭哪一班船', '海灘酒吧／夕陽地點']},
-    {id: 'd13', date: '2026-12-13', title: '舊城・河岸', brief: '回曼谷，大皇宮、臥佛寺、鄭王廟', sleep: 'ratchada',
+    {id: 'd13', date: '2026-12-13', title: '舊城・河岸', brief: '回曼谷，大皇宮、臥佛寺、鄭王廟', sleep: 'ratchada', sun: '沙美島日出約 06:25・曼谷日落約 17:50',
       summary: '上午搭船、包車回曼谷，下午走大皇宮、臥佛寺、鄭王廟，傍晚在 Supanniga 看夕陽吃晚餐，之後到 ICONSIAM。',
       steps: [
         {title: '沙美島 → Ban Phe → 曼谷', icon: '船', time: '10:00 船', paras: ['回程接駁船 10:00／12:30／15:00 從 Na Dan 碼頭開，提前 30 分鐘在飯店大廳等。Baan Ploy Sea 12:00 前退房。', '上岸後包車回曼谷約 2.5–3.5 小時。Ratchada Retreat 15:00 後才能入住。']},
@@ -158,7 +162,7 @@ window.GUIDE = {
       ],
       tips: ['時間很緊：大皇宮 15:30 停止入場。搭 10:00 的船、11:00 左右從 Ban Phe 出發，最快也要 14:00 前後才到舊城。', '建議讓車直接開到大皇宮，行李留在車上，逛完再回住宿；或把大皇宮改到別天上午。', '今天全程寺廟：出門就穿遮肩、遮膝的衣服，鞋子好穿脫。', '晚上回住宿：MRT Sanam Chai 搭藍線直達 Phra Ram 9（11 站，約 25 分鐘）。'],
       pending: ['回程船班與包車時間', 'Supanniga 訂位']},
-    {id: 'd14', date: '2026-12-14', title: 'Siam・Bangna', brief: '市中心購物，下午 Mega Bangna、Topgolf', sleep: 'ratchada',
+    {id: 'd14', date: '2026-12-14', title: 'Siam・Bangna', brief: '市中心購物，下午 Mega Bangna、Topgolf', sleep: 'ratchada', sun: '日落約 17:50',
       summary: '上午到 Siam 商圈（Paragon、CentralWorld、四面佛），下午往東南到 Mega Bangna，晚上 Topgolf。',
       steps: [
         {title: '住宿 → Siam', icon: '車', paras: ['MRT Phra Ram 9 → Sukhumvit，轉 BTS Asok 往 Khu Khot 方向 4 站到 Siam，含轉乘約 25–30 分鐘。MRT 可刷感應信用卡，BTS 要另外買票。']},
@@ -169,7 +173,7 @@ window.GUIDE = {
       ],
       tips: ['Topgolf 按打位計時，15 人訂 3 個打位。', '百貨多半 10:00 才開門，不用太早出發。'],
       pending: ['Topgolf 預約時段']},
-    {id: 'd15', date: '2026-12-15', title: 'Sukhumvit', brief: '睡晚一點，Asok／Phrom Phong 商圈', sleep: 'ratchada',
+    {id: 'd15', date: '2026-12-15', title: 'Sukhumvit', brief: '睡晚一點，Asok／Phrom Phong 商圈', sleep: 'ratchada', sun: '日落約 17:50',
       summary: '睡晚後逛 Terminal 21、EmSphere、EmQuartier，安排按摩與 Rooftop。',
       steps: [
         {title: '住宿 → Asok', icon: '車', paras: ['MRT Phra Ram 9 搭 2 站到 Sukhumvit，出站就是 Terminal 21，約 5 分鐘。']},
@@ -193,12 +197,16 @@ window.GUIDE = {
   ],
 
   quick: [
-    {title: '緊急電話', text: '觀光警察 1155・救護 1669', href: '#info/emergency'},
+    {title: '緊急電話', text: '觀光警察 1155・救護 1669', action: 'sos'},
+    {title: '給司機看', text: '泰文地址放大顯示', action: 'driver'},
+    {title: '匯率換算', text: '泰銖 ↔ 台幣、多人分攤', action: 'money'},
+    {title: '泰語放大', text: '常用句指給對方看', action: 'thai'},
+    {title: '落地流程', text: '01:35 抵達後一步一步來', href: '#info/arrive'},
     {title: '回住宿', text: 'Ratchada Retreat 地址與導航', href: '#stay/ratchada'},
     {title: '捷運怎麼搭', text: '從住宿到各商圈', href: '#move/routes'},
     {title: '沙美島船班', text: '飯店接駁船與公船', href: '#move/boat'},
     {title: '班機', text: '去 CI837 22:30・回 CI832 14:05', href: '#move/flights'},
-    {title: '入境 TDAC', text: '抵達前 3 天內線上填', href: '#info/entry'},
+    {title: '入境 TDAC', text: '出國前 72 小時內線上填', href: '#info/entry'},
     {title: '退稅', text: '滿 2,000 泰銖・P.P.10', href: '#info/vat'},
     {title: '寺廟服裝', text: '遮肩遮膝、好穿脫的鞋', href: '#info/temple'}
   ],
@@ -248,7 +256,8 @@ window.GUIDE = {
     {id: 'airport', title: '機場', cards: [
       {id: 'flights', title: '班機', sub: '中華航空・桃園 TPE 第一航廈 ↔ 蘇凡納布 BKK',
         facts: [['去程 CI837', '12/11（五）22:30 桃園起飛 → 12/12（六）01:35 抵達曼谷'], ['回程 CI832', '12/16（三）14:05 曼谷起飛 → 18:40 抵達桃園']],
-        tips: ['時間皆為當地時間，曼谷比台灣慢 1 小時。', '回程 10:30 從住宿出發，約 11:30 前到機場；要退稅的人不要再晚。']},
+        tips: ['時間皆為當地時間，曼谷比台灣慢 1 小時。', '去程建議 19:30–20:00 前到桃園機場（起飛前 2.5–3 小時）；集合時間與地點以主辦通知為準。', '回程 10:30 從住宿出發，約 11:30 前到機場；要退稅的人不要再晚。'],
+        links: [['CI837 班機動態', 'https://www.flightaware.com/live/flight/CAL837'], ['CI832 班機動態', 'https://www.flightaware.com/live/flight/CAL832']]},
       {id: 'bkk', title: '蘇凡納布機場 BKK', facts: [['從 Ratchada 搭車', '不塞車推估 40–60 分鐘；尖峰（07:00–09:30、16:00–19:00）可能加倍'], ['大眾運輸', 'MRT 轉機場快線約 35–50 分鐘（帶行李較辛苦）'], ['建議', '起飛前 3–4 小時從住宿出發'], ['計程車', '機場排班跳表車另加 50 泰銖機場費與過路費']], tips: ['要退稅的人再多抓 30 分鐘。', '回程 12/16 班機 14:05 起飛，10:30 從住宿出發。', '去程 12/12 凌晨 01:35 抵達，深夜的包車請事先訂好。']}
     ]}
   ],
@@ -256,8 +265,19 @@ window.GUIDE = {
   info: [
     {id: 'before', title: '入境與出發前', cards: [
       {id: 'entry', title: '入境泰國', facts: [['簽證', '台灣護照免簽 30 天（2026/9/15 起由 60 天改為 30 天）'], ['護照', '效期 6 個月以上'], ['TDAC', '所有外國旅客必填、免費；出國前 72 小時內線上填，入境時出示系統確認信'], ['財力抽查', '入境可能抽查，身上需有新臺幣 20,000 或等值貨幣的現金']], warn: 'TDAC 只在官方網站 tdac.immigration.go.th 填寫，搜尋結果裡收費的都是代辦或仿冒網站。', links: [['TDAC 官方網站', 'https://tdac.immigration.go.th/arrival-card/#/home'], ['泰國觀光局入境說明', 'https://www.tattpe.org.tw/HowToGo.html']]},
-      {id: 'weather', title: '12 月中天氣', facts: [['曼谷', '約 21–32°C，乾季、少雨'], ['沙美島', '約 24–30°C，海水約 28°C']], tips: ['白天熱、百貨與捷運冷氣強，帶一件薄外套。', '防曬、帽子、太陽眼鏡必備。']},
+      {id: 'weather', title: '12 月中天氣', facts: [['曼谷', '約 21–32°C，乾季、少雨'], ['沙美島', '約 24–30°C，海水約 28°C'], ['日出／日落', '約 06:30／17:50（曼谷與沙美島差不多）'], ['穿著', '短袖、透氣長褲或長裙；寺廟那天要遮肩遮膝']], tips: ['白天熱、百貨與捷運冷氣強，帶一件薄外套。', '防曬、帽子、太陽眼鏡必備。', '天黑得早：想看夕陽 17:15 前就要到位。'], warn: '氣溫是歷年 12 月平均，出發前幾天請再看天氣預報。'},
       {id: 'power', title: '電壓與插座', paras: ['220V／50Hz。台灣兩扁腳插頭通常可以直接插，但電器本身要支援 220V（手機、筆電充電器一般都支援；吹風機、離子夾要看標示）。']}
+    ]},
+    {id: 'arrive', title: '落地曼谷流程', checklist: [
+      {id: 'arr-1', text: '下機前：把 TDAC 確認信截圖存在手機（不要依賴網路），護照拿在手上'},
+      {id: 'arr-2', text: '跟著 Immigration 指標走到入境審查，排外國護照櫃台；出示護照與 TDAC，可能被問住宿、回程機票與現金'},
+      {id: 'arr-3', text: '領行李：看螢幕找 CI837 的行李轉盤，確認件數'},
+      {id: 'arr-4', text: '海關：沒有要申報的東西走綠色通道'},
+      {id: 'arr-5', text: '出關後在入境大廳（2 樓）換泰銖：沙美島幾乎都付現金，建議每人先換 3,000 泰銖以上，其餘回曼谷再換'},
+      {id: 'arr-6', text: '上網：開啟 eSIM，或在入境大廳電信櫃台買 SIM；確認連得上再離開'},
+      {id: 'arr-7', text: '找包車司機：集合門號與司機聯絡方式以車行通知為準，在大廳內等、不要跟攬客的人走'},
+      {id: 'arr-8', text: '上車前：點人數、點行李件數，上廁所、買水'},
+      {id: 'arr-9', text: '上車後：把 Ao Prao Pier 的泰文（工具 › 給司機看）拿給司機確認目的地'}
     ]},
     {id: 'money', title: '錢與通訊', cards: [
       {id: 'cash', title: '匯率與現金', facts: [['匯率', '1 泰銖約 0.96–0.99 新台幣（2026 年 11 月初中價）'], ['心算', '泰銖價格幾乎等於台幣價格']], tips: ['寺廟門票、渡船、雙條車、國家公園門票、夜市都收現金。', '市區換匯所匯率通常比機場好；Central Rama 9 就有。', '百貨、餐廳、MRT 可刷卡。']},
@@ -283,6 +303,9 @@ window.GUIDE = {
         ['結帳', 'เช็คบิล', 'chek-bin'],
         ['廁所在哪裡？', 'ห้องน้ำอยู่ที่ไหน', 'hong-nam yu thi-nai'],
         ['請跳表', 'เปิดมิเตอร์ด้วย', 'poet mi-toe duai'],
+        ['請幫幫我', 'ช่วยด้วย', 'chuai duai'],
+        ['請帶我去醫院', 'ไปโรงพยาบาล', 'pai rong-pha-ya-ban'],
+        ['可以刷卡嗎？', 'จ่ายบัตรได้ไหม', 'jai bat dai mai'],
         ['去這裡', 'ไปที่นี่', 'pai thi-ni']]}}
     ]},
     {id: 'packing', title: '行李清單', checklist: [

@@ -56,3 +56,9 @@ Activity areas are selectable individually and deduplicated between days. Each a
 Koh Samet positions use OSM beach way 96477683, Ao Phai node 617547920, Na Dan pier way 27622262, and Ban Phe node 2078709709. The initial Sai Kaew search returned a resort rather than the beach and was rejected. Na Dan is a transfer reference, not a confirmed boat booking. The original itinerary leaves the 12 December overnight location undecided; the return-transfer summary is conditional on staying on the island. Boat services and the exact Ban Phe departure pier remain undecided. Reference: https://www.samedresorts.com/transportation.html
 
 Routing documentation and demo-server policy: https://project-osrm.org/docs/v5.24.0/api/ and https://github.com/Project-OSRM/osrm-backend/wiki/Demo-server . Road data uses OpenStreetMap; visible map attribution links to its copyright/licence information.
+
+## On-trip helpers
+
+- `sw.js` + `manifest.webmanifest`: offline reading and "add to home screen". Bump `VERSION` in `sw.js` together with the `?v=` strings in `index.html`.
+- Overview "now" card: before departure it shows prep status; during the trip it shows the next stop (progress is tapped by the user and stored in `localStorage`). Append `?now=2026-12-12T09:00` (Bangkok time) to preview a given day.
+- Tools sheet (工具 button): currency converter, large-print Thai cards for drivers, phrases. SOS button: emergency numbers and tonight's stay.

@@ -37,7 +37,10 @@
   }
 
   // ---- dates ----
-  const bangkokToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date());
+  // ?now=2026-12-12T09:00 (Bangkok time) previews how the site looks on a given day.
+  const nowParam=new URLSearchParams(location.search).get('now');
+  const clock=()=>/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(nowParam||'')?new Date(nowParam+':00+07:00'):new Date();
+  const bangkokToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(clock());
   const dayNumber=iso=>Math.round(Date.parse(iso+'T00:00:00Z')/86400000);
   const weekday=iso=>'日一二三四五六'[new Date(iso+'T00:00:00Z').getUTCDay()];
   const shortDate=iso=>Number(iso.slice(5,7))+'/'+Number(iso.slice(8,10));
@@ -73,7 +76,6 @@
     if(card.facts)into.append(facts(card.facts));
     if(card.list||card.tips){const ul=el('ul');for(const text of [...(card.list||[]),...(card.tips||[])])ul.append(el('li','',text));into.append(ul);}
     if(card.table)into.append(table(card.table));
-    if(card.thai){const box=el('div','thai');box.lang='th';box.append(el('small','',card.thaiLabel||'給司機看'),document.createTextNode(card.thai));into.append(box);}
     if(card.warn)into.append(el('p','note',card.warn));
     if(card.links?.length){const row=el('div','actions');for(const [text,href] of card.links)row.append(link(text+(href.startsWith('#')||href.startsWith('tel:')?'':' ↗'),href,'btn'));into.append(row);}
   }
@@ -84,7 +86,7 @@
     if(data.sub)box.append(el('p','sub',data.sub));
     if(data.badges){const row=el('p');for(const badge of data.badges)row.append(el('span','badge',badge));box.append(row);}
     body(data,box);
-    if(data.id)register({title:data.title,text:flatten(data),where:views.find(v=>v.id===view).label,hash:view+'/'+data.id});
+    if(data.id){box.append(shareButton(view+'/'+data.id,data.title,'card-share'));register({title:data.title,text:flatten(data),where:views.find(v=>v.id===view).label,hash:view+'/'+data.id});}
     return box;
   }
   function title(text,sub){const head=el('div','view-title');head.append(el('h2','',text));if(sub)head.append(el('p','',sub));return head;}
@@ -119,9 +121,12 @@
     if(!compact&&stay.notes?.length){const ul=el('ul');for(const note of stay.notes)ul.append(el('li','',note));box.append(ul);}
     if(!compact&&stay.warn)box.append(el('p','note',stay.warn));
     const row=el('div','actions');
-    row.append(link('導航到這裡 ↗',dirUrl(stay),'btn primary'),link('Google 地圖 ↗',mapUrl(stay),'btn'));
+    row.append(link('導航到這裡 ↗',dirUrl(stay),'btn primary'));
+    if(stay.addressTh)row.append(driverButton(stayTarget(stay)));
+    row.append(link('Google 地圖 ↗',mapUrl(stay),'btn'));
     if(compact)row.append(link('住宿詳情','#stay/'+stay.id,'btn'));
     else{
+      row.append(shareButton('stay/'+stay.id,stay.name));
       if(stay.mapHome)row.append(mapButton('在地圖上看',map=>map.home(stay.mapHome)));
       else if(stay.mapPlace)row.append(mapButton('在地圖上看',map=>map.place(stay.mapPlace)));
       for(const [text,href] of stay.links||[])row.append(link(text+' ↗',href,'btn'));
@@ -147,14 +152,7 @@
     else count.append(el('span','','旅程已結束，辛苦了'));
     hero.append(count);view.append(hero);
 
-    if(todayDay){
-      view.append(el('h3','section-title','今天'));
-      const box=el('article','card');box.style.setProperty('--day',dayColor(todayDay));
-      box.append(el('p','kicker',shortDate(todayDay.date)+'（'+weekday(todayDay.date)+'）'),el('h3','',todayDay.title),el('p','',todayDay.summary));
-      const row=el('div','actions');row.append(link('看今天行程','#plan/'+todayDay.id,'btn primary'));
-      const sleep=stayById(todayDay.sleep);if(sleep)row.append(link('導航回住宿 ↗',dirUrl(sleep),'btn'));
-      box.append(row);view.append(box);
-    }
+    const nowBox=el('article','card now');nowBox.id='home-now';view.append(nowBox);renderNow(nowBox);
 
     view.append(el('h3','section-title','每日行程'));
     const days=el('div','grid five');
@@ -172,7 +170,12 @@
 
     view.append(el('h3','section-title','快速查詢'));
     const quick=el('div','quick');
-    for(const item of guide.quick){const a=link('',item.href);a.append(el('strong','',item.title),el('span','',item.text));quick.append(a);}
+    for(const item of guide.quick){
+      let node;
+      if(item.action){node=el('button');node.type='button';node.addEventListener('click',()=>item.action==='sos'?openSos():openTools(item.action));}
+      else node=link('',item.href);
+      node.append(el('strong','',item.title),el('span','',item.text));quick.append(node);
+    }
     view.append(quick);
 
     if(guide.todo?.length){
@@ -198,6 +201,8 @@
     const base=stayById(day.from||day.sleep)||mainStay;
     if(base&&!p.noTransit)row.append(link('從住宿出發 ↗',dirUrl(p,base,p.driveOnly?'driving':'transit'),'btn'));
     row.append(mapButton('在地圖上看',map=>map.place(id)));
+    if(p.thai)row.append(driverButton(placeTarget(p)));
+    row.append(shareButton('plan/'+day.id+'/'+id,p.name));
     inner.append(row);box.append(summary,inner);li.append(no,box);
     register({title:p.name,text:flatten(p)+' '+(p.keywords||''),where:shortDate(day.date)+' 行程',hash:'plan/'+day.id+'/'+id});
     return li;
@@ -215,7 +220,7 @@
     view.append(chips);
     for(const day of guide.days){
       const section=el('div','day');section.id='plan-'+day.id;section.dataset.day=day.id;section.style.setProperty('--day',dayColor(day));
-      const head=el('div','day-head');head.append(el('h3','','Day '+(guide.days.indexOf(day)+1)+'｜'+day.title),el('p','',day.summary));
+      const head=el('div','day-head');head.append(el('h3','','Day '+(guide.days.indexOf(day)+1)+'｜'+day.title),el('p','',day.summary));if(day.sun)head.append(el('p','sun',day.sun));
       section.append(head);
       const list=el('ol','timeline');let number=0;
       for(const step of day.steps){
@@ -231,7 +236,7 @@
       if(day.pending?.length){const note=el('p','note');note.append(el('strong','','尚未確定：'),document.createTextNode(day.pending.join('、')));section.append(note);}
       const sleep=stayById(day.sleep),row=el('div','actions');
       if(sleep)row.append(link('今晚住：'+sleep.short,'#stay/'+sleep.id,'btn'),link('導航回住宿 ↗',dirUrl(sleep),'btn'));
-      row.append(mapButton('當天地圖',map=>map.day(day.id)));section.append(row);
+      row.append(mapButton('當天地圖',map=>map.day(day.id)),shareButton('plan/'+day.id,shortDate(day.date)+' '+day.title));section.append(row);
       register({title:shortDate(day.date)+' '+day.title,text:day.summary+' '+day.steps.map(s=>s.title||'').join(' ')+' '+(day.tips||[]).join(' '),where:'行程',hash:'plan/'+day.id});
       view.append(section);
     }
@@ -262,6 +267,154 @@
     }
   }
 
+  // ---- sheet: full-screen helper used by the driver card, tools and emergency ----
+  const sheet=$('sheet');
+  function openSheet(heading,content){$('sheet-title').textContent=heading;$('sheet-body').replaceChildren(content);if(!sheet.open)sheet.showModal();$('sheet-body').scrollTop=0;}
+  $('sheet-close').addEventListener('click',()=>sheet.close());
+  sheet.addEventListener('click',event=>{if(event.target===sheet||event.target.closest('a[href^="#"]'))sheet.close();});
+  let toastTimer;
+  function toast(text){const box=$('toast');box.textContent=text;box.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{box.hidden=true;},2200);}
+  const telHref=number=>'tel:'+number.replace(/[^\d+]/g,'');
+
+  // ---- share a deep link ----
+  function share(hash,text){
+    const url=location.origin+location.pathname+'#'+hash;
+    if(navigator.share)navigator.share({title:text+'｜Bangkok Trip Note',url}).catch(()=>{});
+    else if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>toast('已複製連結，可以貼到 LINE'),()=>toast('無法複製，請長按網址列複製'));
+    else toast('無法複製，請長按網址列複製');
+  }
+  function shareButton(hash,text,cls){const button=el('button',cls||'btn','分享');button.type='button';button.setAttribute('aria-label','分享「'+text+'」的連結');button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();share(hash,text);});return button;}
+
+  // ---- show to driver ----
+  function showBig(heading,thai,lines,buttons){
+    const box=el('div','driver'),big=el('p','driver-thai',thai);big.lang='th';
+    box.append(big);for(const [cls,text] of lines)if(text)box.append(el('p',cls,text));
+    if(buttons?.length){const row=el('div','actions');row.append(...buttons);box.append(row);}
+    openSheet(heading,box);
+  }
+  function showDriver(t){
+    const buttons=[];
+    if(t.phone)buttons.push(link('撥電話 '+t.phone,telHref(t.phone),'btn'));
+    if(t.nav)buttons.push(link('導航 ↗',dirUrl(t.nav),'btn primary'));
+    showBig('給司機看',t.thai,[['driver-ask','ไปที่นี่（請載我到這裡）'],['driver-name',t.name],['driver-address',t.address]],buttons);
+  }
+  function driverButton(t){const button=el('button','btn','給司機看');button.type='button';button.addEventListener('click',()=>showDriver(t));return button;}
+  const stayTarget=stay=>({name:stay.name,thai:stay.addressTh,phone:stay.phone,address:stay.address,nav:stay});
+  const placeTarget=p=>({name:p.name,thai:p.thai,nav:p});
+  function driverTargets(){
+    const list=guide.stays.filter(stay=>stay.addressTh).map(stayTarget);
+    for(const id of Object.keys(guide.places)){const p=point(id);if(p?.thai)list.push(placeTarget(p));}
+    return list;
+  }
+  const phrases=()=>guide.info.find(group=>group.id==='thai')?.cards[0].table.rows||[];
+  const showPhrase=row=>showBig(row[0],row[1],[['driver-name',row[0]],['driver-address','唸法：'+row[2]]]);
+
+  // ---- currency converter ----
+  function converter(){
+    const box=el('div','convert');let rate=guide.trip.rate;
+    try{const saved=Number(localStorage.getItem('tripnote-rate'));if(saved>0)rate=saved;}catch(error){}
+    const field=(label,value)=>{const wrap=el('label','field'),input=el('input');input.type='number';input.inputMode='decimal';input.min='0';input.step='any';if(value!==undefined)input.value=value;wrap.append(el('span','',label),input);return [wrap,input];};
+    const [thbWrap,thb]=field('泰銖 THB'),[twdWrap,twd]=field('新台幣 TWD'),[peopleWrap,people]=field('幾個人分',1),[rateWrap,rateInput]=field('1 泰銖＝幾台幣',rate);
+    const out=el('p','convert-out');out.setAttribute('aria-live','polite');
+    const fmt=n=>n.toLocaleString('zh-TW',{maximumFractionDigits:n<100?1:0});
+    const round=n=>String(Math.round(n*10)/10);
+    function split(){const total=Number(thb.value),n=Math.max(1,Math.floor(Number(people.value)||1));out.textContent=total>0&&n>1?'每人 '+fmt(total/n)+' 泰銖（約 '+fmt(total/n*rate)+' 台幣）':'';}
+    function fromThb(){twd.value=thb.value===''?'':round(Number(thb.value)*rate);split();}
+    thb.addEventListener('input',fromThb);
+    twd.addEventListener('input',()=>{thb.value=twd.value===''?'':round(Number(twd.value)/rate);split();});
+    rateInput.addEventListener('input',()=>{const value=Number(rateInput.value);if(value>0){rate=value;try{localStorage.setItem('tripnote-rate',String(value));}catch(error){}fromThb();}});
+    people.addEventListener('input',split);
+    const chips=el('div','chips');
+    for(const n of [20,100,300,500,1000,5000]){const chip=el('button','chip',String(n));chip.type='button';chip.addEventListener('click',()=>{thb.value=String(n);fromThb();});chips.append(chip);}
+    const top=el('div','convert-grid'),bottom=el('div','convert-grid');top.append(thbWrap,twdWrap);bottom.append(peopleWrap,rateWrap);
+    box.append(top,chips,bottom,out,el('p','sub','預設匯率是 2026 年 11 月初的中價，實際以換匯或刷卡當下為準。改過的匯率只存在這支裝置。'));
+    return box;
+  }
+
+  // ---- tools sheet ----
+  function openTools(focus){
+    const box=el('div','tools');
+    const section=(id,heading)=>{const head=el('h3','section-title',heading);head.id='tool-'+id;box.append(head);};
+    const item=(strong,sub,thai,action)=>{const button=el('button','tool-item');button.type='button';const second=el('span','',sub);if(thai)second.lang='th';button.append(el('strong','',strong),second);button.addEventListener('click',action);return button;};
+    section('money','匯率換算');box.append(converter());
+    section('driver','給司機看');
+    const places=el('div','tool-list');for(const t of driverTargets())places.append(item(t.name,t.thai,true,()=>showDriver(t)));box.append(places);
+    section('thai','泰語放大');
+    const list=el('div','tool-list');for(const row of phrases())list.append(item(row[0],row[1],true,()=>showPhrase(row)));box.append(list);
+    section('offline','離線與主畫面');
+    const tips=el('ul','tool-tips');
+    for(const text of ['這個網站開過一次之後，沒有網路也能看行程、住宿、交通與實用資訊。','地圖底圖、導航與外部連結仍需要網路；出發前請在 Google 地圖下載曼谷與沙美島的離線地圖。','iPhone：用 Safari 開啟，點「分享」→「加入主畫面」。','Android：用 Chrome 開啟，點右上選單 →「加到主畫面」或「安裝應用程式」。','勾選的清單、進度與匯率只存在這支裝置。'])tips.append(el('li','',text));
+    box.append(tips);
+    openSheet('隨身工具',box);
+    if(focus)$('tool-'+focus)?.scrollIntoView({block:'start'});
+  }
+  function openSos(){
+    const box=el('div','sos');
+    for(const [label,number] of guide.sos){const a=link('',telHref(number),'sos-call');a.append(el('span','',label),el('strong','',number));box.append(a);}
+    const stay=stayById(todayDay?.sleep)||mainStay;
+    box.append(el('h3','section-title',todayDay?.sleep?'今晚的住宿':'曼谷住宿'));
+    const card=el('article','card');card.append(el('h3','',stay.name));
+    const rows=[['地址',stay.address]];if(stay.phone)rows.push(['電話',stay.phone]);card.append(facts(rows));
+    const row=el('div','actions');row.append(driverButton(stayTarget(stay)),link('導航回住宿 ↗',dirUrl(stay),'btn'));card.append(row);box.append(card);
+    box.append(el('h3','section-title','指給對方看'));
+    const list=el('div','tool-list');for(const row of phrases().filter(r=>/幫幫我|醫院/.test(r[0]))){const button=el('button','tool-item');button.type='button';const thai=el('span','',row[1]);thai.lang='th';button.append(el('strong','',row[0]),thai);button.addEventListener('click',()=>showPhrase(row));list.append(button);}
+    box.append(list,el('p','note','遇到糾紛或被敲竹槓先打 1155。護照遺失：先到警局報案，再聯絡辦事處。'));
+    const more=el('div','actions');more.append(link('完整緊急聯絡資訊','#info/emergency','btn'));box.append(more);
+    openSheet('緊急聯絡',box);
+  }
+  $('sos-button').addEventListener('click',openSos);
+  $('fab').addEventListener('click',()=>openTools());
+
+  // ---- "now" card on the overview: what to do next, based on the date and tapped progress ----
+  function saveChecks(){try{localStorage.setItem('tripnote-checks',JSON.stringify(checks));}catch(error){}}
+  function stepsOf(day){
+    return day.steps.map((step,i)=>{
+      const p=step.place?point(step.place):null;
+      return {key:'done-'+day.id+'-'+i,title:p?p.name:step.title,brief:p?p.brief:(step.paras||[])[0],time:step.time,place:p,links:step.links,hash:p?'plan/'+day.id+'/'+p.id:'plan/'+day.id};
+    }).filter(step=>step.title);
+  }
+  function renderNow(box){
+    box.replaceChildren();
+    const diff=dayNumber(guide.trip.start)-dayNumber(today),actions=el('div','actions');
+    if(todayDay){
+      const steps=stepsOf(todayDay),found=steps.findIndex(step=>!checks[step.key]),at=found<0?steps.length:found,step=steps[at];
+      box.style.setProperty('--day',dayColor(todayDay));
+      box.append(el('p','kicker','現在・'+shortDate(todayDay.date)+'（'+weekday(todayDay.date)+'）Day '+(guide.days.indexOf(todayDay)+1)+'｜'+todayDay.title));
+      if(step){
+        box.append(el('p','now-label',(at?'下一站':'第一站')+'　'+(at+1)+'／'+steps.length));
+        const heading=el('h3','now-title');if(step.time)heading.append(el('span','step-time',step.time));heading.append(document.createTextNode(step.title));box.append(heading);
+        if(step.brief)box.append(el('p','',step.brief));
+        if(step.place?.facts)box.append(facts(step.place.facts.slice(0,2)));
+        if(steps[at+1])box.append(el('p','sub','之後：'+steps[at+1].title));
+        if(step.place){actions.append(link('導航 ↗',dirUrl(step.place),'btn primary'));if(step.place.thai)actions.append(driverButton(placeTarget(step.place)));}
+        for(const [text,href] of step.links||[])actions.append(link(text,href,'btn'));
+        actions.append(link('詳情','#'+step.hash,'btn'));
+        const done=el('button','btn',steps[at+1]?'完成，看下一站':'完成');done.type='button';done.addEventListener('click',()=>{checks[step.key]=true;saveChecks();renderNow(box);});actions.append(done);
+      } else box.append(el('h3','now-title','今天的行程走完了'),el('p','','辛苦了，回住宿休息吧。'));
+      if(todayDay.sun)box.append(el('p','sub',todayDay.sun));
+      const sleep=stayById(todayDay.sleep);
+      if(sleep){actions.append(link('導航回住宿 ↗',dirUrl(sleep),'btn'));if(!step&&sleep.addressTh)actions.append(driverButton(stayTarget(sleep)));}
+      if(at>0){const back=el('button','btn','回上一站');back.type='button';back.addEventListener('click',()=>{checks[steps[at-1].key]=false;saveChecks();renderNow(box);});actions.append(back);}
+      actions.append(link('今天全部行程','#plan/'+todayDay.id,'btn'));
+    } else if(diff===0){
+      box.append(el('p','kicker','今天・出發日'),el('h3','now-title','今晚出發'));
+      box.append(facts([['班機','CI837　22:30 桃園第一航廈起飛'],['到機場','建議 19:30–20:00 前到；集合時間與地點以主辦通知為準'],['抵達','12/12 01:35 曼谷（當地時間，比台灣慢 1 小時）']]));
+      actions.append(link('班機動態 ↗','https://www.flightaware.com/live/flight/CAL837','btn primary'),link('行李清單','#info/packing','btn'),link('落地流程','#info/arrive','btn'));
+    } else if(diff>0){
+      const left=guide.todo.filter(item=>!checks[item.id]).length,wait=dayNumber(guide.trip.tdacOpen)-dayNumber(today);
+      box.append(el('p','kicker','出發前'),el('h3','now-title','出發前準備'));
+      box.append(facts([['班機','12/11（五）22:30 CI837，桃園第一航廈'],['TDAC',wait>0?'12/9 起才能填（還有 '+wait+' 天）':'現在可以填了，填完把確認信截圖存起來'],['待確認',left?'還有 '+left+' 項沒勾':'全部勾完了']]));
+      if(wait<=0)actions.append(link('填 TDAC ↗','https://tdac.immigration.go.th/arrival-card/#/home','btn primary'));
+      actions.append(link('待確認清單','#home/todo','btn'),link('行李清單','#info/packing','btn'),link('落地流程','#info/arrive','btn'));
+    } else {box.hidden=true;return;}
+    box.append(actions);
+  }
+
+  // ---- offline ----
+  function connection(){$('offline').hidden=navigator.onLine;}
+  addEventListener('online',connection);addEventListener('offline',connection);connection();
+  if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+
   // ---- routing ----
   const tabs=$('tabs');
   for(const view of views){
@@ -282,7 +435,7 @@
     const view=views.some(v=>v.id===parts[0])?parts[0]:'home';
     for(const section of document.querySelectorAll('.view'))section.hidden=section.dataset.view!==view;
     for(const tab of tabs.children){if(tab.dataset.view===view)tab.setAttribute('aria-current','page');else tab.removeAttribute('aria-current');}
-    $('site-footer').hidden=view==='map';
+    $('site-footer').hidden=view==='map';$('fab').hidden=view==='map';
     if(view==='map'){if(window.TripMap)window.TripMap.refresh();else window.TripMapInit();}
     if(view==='plan'){
       const day=guide.days.find(d=>d.id===parts[1]);

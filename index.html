@@ -3,23 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="曼谷・沙美島旅遊攻略：2026 年 12 月 12–16 日每日行程、住宿、交通、景點資訊與實用須知。">
+  <meta name="description" content="曼谷・沙美島旅遊攻略：2026 年 12 月 11–16 日每日行程、住宿、交通、景點資訊與實用須知。">
   <meta name="theme-color" content="#125c53">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Bangkok Trip Note</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Trip Note">
   <link rel="stylesheet" href="vendor/leaflet.css">
-  <link rel="stylesheet" href="styles.css?v=20261112-guide3">
-  <link rel="stylesheet" href="guide.css?v=20261112-guide3">
+  <link rel="stylesheet" href="styles.css?v=20261112-guide4">
+  <link rel="stylesheet" href="guide.css?v=20261112-guide4">
   <script src="vendor/leaflet.js" defer></script>
-  <script src="data.js?v=20261112-guide3" defer></script>
-  <script src="itinerary.js?v=20261112-guide3" defer></script>
-  <script src="guide-data.js?v=20261112-guide3" defer></script>
-  <script src="navigation.js?v=20261112-guide3" defer></script>
+  <script src="data.js?v=20261112-guide4" defer></script>
+  <script src="itinerary.js?v=20261112-guide4" defer></script>
+  <script src="guide-data.js?v=20261112-guide4" defer></script>
+  <script src="navigation.js?v=20261112-guide4" defer></script>
   <script src="maps-config.js?v=20261012-live2" defer></script>
   <script src="google-maps.js?v=20261012-transit2" defer></script>
-  <script src="app.js?v=20261112-guide3" defer></script>
-  <script src="guide-app.js?v=20261112-guide3" defer></script>
+  <script src="app.js?v=20261112-guide4" defer></script>
+  <script src="guide-app.js?v=20261112-guide4" defer></script>
 </head>
 <body>
   <a class="skip" href="#view">跳到主要內容</a>
@@ -31,7 +34,9 @@
       <input id="search-input" type="search" placeholder="搜尋：景點、地址、門票、電話…" autocomplete="off" enterkeyhint="search">
       <div id="search-results" class="search-results" hidden></div>
     </div>
+    <button id="sos-button" class="sos-button" type="button" aria-label="緊急聯絡">SOS</button>
   </header>
+  <div id="offline" class="offline" role="status" hidden>目前離線：攻略內容照常可看，地圖與導航需要網路。</div>
   <main id="view" class="guide" tabindex="-1">
     <section id="view-home" class="view" data-view="home" aria-label="總覽"></section>
     <section id="view-plan" class="view" data-view="plan" aria-label="每日行程" hidden></section>
@@ -52,6 +57,9 @@
     <section id="view-info" class="view" data-view="info" aria-label="實用資訊" hidden></section>
   </main>
   <footer class="site-footer" id="site-footer"></footer>
+  <button id="fab" class="fab" type="button">工具</button>
+  <dialog id="sheet" class="sheet" aria-labelledby="sheet-title"><div class="sheet-head"><h2 id="sheet-title"></h2><button id="sheet-close" type="button">關閉</button></div><div id="sheet-body" class="sheet-body"></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
   <noscript><p class="noscript">請啟用 JavaScript 以顯示攻略內容。</p></noscript>
 </body>
 </html>
