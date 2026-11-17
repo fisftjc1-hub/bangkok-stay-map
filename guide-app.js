@@ -45,6 +45,9 @@
   const weekday=iso=>'日一二三四五六'[new Date(iso+'T00:00:00Z').getUTCDay()];
   const shortDate=iso=>Number(iso.slice(5,7))+'/'+Number(iso.slice(8,10));
   const today=bangkokToday();
+  const bangkokClock=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(clock());
+  const skyParam=new URLSearchParams(location.search).get('sky');
+  const sky=['night','dawn','day','sunset'].includes(skyParam)?skyParam:window.TripScene.sky(Number(bangkokClock.slice(0,2))+Number(bangkokClock.slice(3))/60);
   const todayDay=guide.days.find(day=>day.date===today);
   const dayColor=day=>itinerary.days.find(d=>d.id===day.id)?.color||'#125c53';
 
@@ -137,20 +140,40 @@
   }
 
   // ---- overview ----
+  const NS='http://www.w3.org/2000/svg';
+  function icon(d){const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const path=document.createElementNS(NS,'path');path.setAttribute('d',d);svg.append(path);return svg;}
+  const dayIcons={
+    d12:'M2 16c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0M2 20c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0M12 3v2M5.6 5.6 7 7M18.4 5.6 17 7M8 11a4 4 0 0 1 8 0',
+    d13:'M12 2v3M9 9l3-4 3 4M7 14l5-5 5 5M5 20l1-6h12l1 6M3 20h18M11 20v-3h2v3',
+    d14:'M5 8h14l-1 12H6L5 8zM9 8V6a3 3 0 0 1 6 0v2',
+    d15:'M5 4h14l-7 8-7-8zM12 12v7M8 20h8M15 4l2-2',
+    d16:'M21 3 3 10.5l6.5 2.5L12 20l3-5 6-12zM9.5 13 21 3'
+  };
+  function pass(flight){
+    const box=el('article','pass'),inner=el('div','pass-body'),main=el('div','pass-main'),route=el('div','pass-route'),from=el('div'),to=el('div'),line=el('div','pass-line'),info=el('dl','pass-info'),stub=el('div','pass-stub');
+    from.append(el('strong','',flight.from),el('span','',flight.fromName));to.append(el('strong','',flight.to),el('span','',flight.toName));
+    line.append(el('span','','✈'));line.setAttribute('aria-hidden','true');route.append(from,line,to);
+    for(const [key,value,note] of [['日期',flight.date],['起飛',flight.dep],['抵達',flight.arr,flight.arrNote]]){const item=el('div'),dd=el('dd','',value);if(note)dd.append(el('small','',note));item.append(el('dt','',key),dd);info.append(item);}
+    main.append(el('p','pass-top',flight.label+'・中華航空'),route,info);
+    const bars=el('span','pass-bars');bars.setAttribute('aria-hidden','true');
+    stub.append(el('small','','FLIGHT'),el('span','pass-code',flight.code),bars);
+    inner.append(main,stub);box.append(inner);return box;
+  }
   function renderHome(){
     const view=$('view-home');view.replaceChildren();
-    const hero=el('div','hero');
-    hero.append(el('p','hero-kicker','TRIP NOTE'),el('h2','',guide.trip.name));
+    const hero=el('div','hero');hero.dataset.sky=sky;hero.insertAdjacentHTML('afterbegin',window.TripScene.html());
+    const text=el('div','hero-text'),heading=el('h2');heading.setAttribute('aria-label',guide.trip.name);
+    [...guide.trip.name].forEach((char,i)=>{const span=el('span','',char);span.setAttribute('aria-hidden','true');span.style.setProperty('--i',i);heading.append(span);});
     const meta=el('div','hero-meta');
-    meta.append(el('span','',guide.trip.start.replaceAll('-','.')+' — '+shortDate(guide.trip.end).replace('/','.')),el('span','',guide.trip.people+' 人 · '+(guide.days.length-1)+' 晚'),el('span','',guide.trip.route));
-    hero.append(meta);
-    if(guide.trip.flights){const flights=el('div','hero-flights');for(const flight of guide.trip.flights){const row=el('p');row.append(el('strong','',flight.label+' '+flight.code),document.createTextNode(flight.date+'　'+flight.text));flights.append(row);}hero.append(flights);}
+    meta.append(el('span','',guide.trip.start.replaceAll('-','.')+' — '+shortDate(guide.trip.end).replace('/','.')),el('span','',guide.trip.people+' 人・'+(guide.days.length-1)+' 晚'),el('span','',guide.trip.route));
     const diff=dayNumber(guide.trip.start)-dayNumber(today),count=el('div','hero-count');
     if(diff>0)count.append(el('span','','距離出發'),el('strong','',String(diff)),el('span','','天'));
     else if(todayDay)count.append(el('span','','今天是'),el('strong','','Day '+(guide.days.indexOf(todayDay)+1)),el('span','',todayDay.title));
     else if(diff===0)count.append(el('span','','今晚出發'),el('strong','','22:30'),el('span','','桃園第一航廈'));
     else count.append(el('span','','旅程已結束，辛苦了'));
-    hero.append(count);view.append(hero);
+    text.append(el('p','hero-kicker','TRIP NOTE'),heading,el('p','hero-latin','Bangkok — Koh Samet'),meta,count);
+    hero.append(text,el('p','hero-sky',window.TripScene.label[sky]+' '+bangkokClock+'・天色跟著當地時間變化'));view.append(hero);
+    if(guide.trip.flights?.length){const passes=el('div','passes');for(const flight of guide.trip.flights)passes.append(pass(flight));view.append(passes);}
 
     const nowBox=el('article','card now');nowBox.id='home-now';view.append(nowBox);renderNow(nowBox);
 
@@ -158,7 +181,8 @@
     const days=el('div','grid five');
     for(const day of guide.days){
       const button=el('button','card day-card'+(day===todayDay?' is-today':''));button.type='button';button.style.setProperty('--day',dayColor(day));
-      button.append(el('span','date',shortDate(day.date)+'（'+weekday(day.date)+'）'),el('strong','',day.title),el('span','',day.brief));
+      if(dayIcons[day.id])button.append(icon(dayIcons[day.id]));
+      button.append(el('span','day-no',String(Number(day.date.slice(8)))),el('span','date','12 月・週'+weekday(day.date)+'・DAY '+(guide.days.indexOf(day)+1)),el('strong','',day.title),el('span','',day.brief));
       button.addEventListener('click',()=>go('plan',day.id));days.append(button);
     }
     view.append(days);
@@ -220,7 +244,7 @@
     view.append(chips);
     for(const day of guide.days){
       const section=el('div','day');section.id='plan-'+day.id;section.dataset.day=day.id;section.style.setProperty('--day',dayColor(day));
-      const head=el('div','day-head');head.append(el('h3','','Day '+(guide.days.indexOf(day)+1)+'｜'+day.title),el('p','',day.summary));if(day.sun)head.append(el('p','sun',day.sun));
+      const head=el('div','day-head');head.dataset.no=String(Number(day.date.slice(8)));head.append(el('h3','','Day '+(guide.days.indexOf(day)+1)+'｜'+day.title),el('p','',day.summary));if(day.sun)head.append(el('p','sun',day.sun));
       section.append(head);
       const list=el('ol','timeline');let number=0;
       for(const step of day.steps){
@@ -444,8 +468,16 @@
       else if(currentView!==view||day)scrollTo({top:0,behavior:'auto'});
     } else if(parts[1]&&view!=='map')flash($(view+'-'+parts[1]));
     else if(currentView!==view)scrollTo({top:0,behavior:'auto'});
-    currentView=view;
+    currentView=view;heroState();
   }
+  function heroState(){
+    const hero=document.querySelector('.hero'),home=currentView==='home'&&hero;
+    document.body.classList.toggle('at-hero',Boolean(home&&scrollY<hero.offsetHeight-90));
+    if(home&&!reducedMotion)hero.style.setProperty('--p',Math.min(1,scrollY/hero.offsetHeight).toFixed(3));
+  }
+  let heroTick=false;
+  addEventListener('scroll',()=>{if(heroTick)return;heroTick=true;requestAnimationFrame(()=>{heroTick=false;heroState();});},{passive:true});
+  addEventListener('resize',heroState);
 
   // ---- search ----
   const input=$('search-input'),results=$('search-results');
@@ -491,6 +523,13 @@
   renderHome();renderPlan();renderStay();
   renderCards('move','交通','機場、捷運、包車與沙美島船班',guide.move);
   renderCards('info','實用資訊','入境、金錢、禮儀、緊急聯絡與行李',guide.info);
+  // Reveal overview blocks as they scroll into view.
+  if(!reducedMotion&&'IntersectionObserver' in window){
+    const seen=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){entry.target.classList.add('in');seen.unobserve(entry.target);}},{rootMargin:'0px 0px -6% 0px'});
+    for(const node of document.querySelectorAll('#view-home>.section-title,#view-home>.card,#view-home .grid>*,#view-home .quick>*,#view-home .passes>*')){
+      node.classList.add('rv');node.style.setProperty('--d',([...node.parentNode.children].indexOf(node)%6*70)+'ms');seen.observe(node);
+    }
+  }
   window.addEventListener('hashchange',route);
   route();
 })();

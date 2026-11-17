@@ -5,8 +5,8 @@ window.GUIDE = {
   disclaimer: '開放時間、票價、船班與法規以 2026/11/12 查到的公開資料整理，標示「再確認」者來源不一致；出發前與當天請以官方公告和訂房確認信為準。',
   trip: {name: '曼谷・沙美島', start: '2026-12-11', end: '2026-12-16', people: 15, route: '沙美島 1 晚 → 曼谷 3 晚', rate: 0.98, tdacOpen: '2026-12-09',
     flights: [
-      {label: '去程', code: 'CI837', date: '12/11（五）', text: '桃園 TPE 第一航廈 22:30 → 蘇凡納布 BKK 01:35（12/12）'},
-      {label: '回程', code: 'CI832', date: '12/16（三）', text: '蘇凡納布 BKK 14:05 → 桃園 TPE 18:40'}
+      {label: '去程', code: 'CI837', date: '12/11（五）', from: 'TPE', fromName: '桃園・第一航廈', to: 'BKK', toName: '曼谷・蘇凡納布', dep: '22:30', arr: '01:35', arrNote: '+1', text: '桃園 TPE 第一航廈 22:30 → 蘇凡納布 BKK 01:35（12/12）'},
+      {label: '回程', code: 'CI832', date: '12/16（三）', from: 'BKK', fromName: '曼谷・蘇凡納布', to: 'TPE', toName: '桃園', dep: '14:05', arr: '18:40', text: '蘇凡納布 BKK 14:05 → 桃園 TPE 18:40'}
     ]},
 
   // Shown on the always-visible emergency button.

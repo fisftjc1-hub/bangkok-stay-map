@@ -1,6 +1,6 @@
 // Offline support: keeps the guide pages readable without a connection.
 // Map tiles, Google Maps and external links still need the network.
-const VERSION = '20261112-guide4';
+const VERSION = '20261117-guide6';
 const CACHE = 'tripnote-' + VERSION;
 const EXTRA = ['favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'roads/home-ratchada.json?v=20261012', 'terms.html', 'privacy.html'];
 
@@ -27,7 +27,8 @@ function timeout(ms) { return new Promise((resolve, reject) => setTimeout(() => 
 
 self.addEventListener('fetch', event => {
   const request = event.request, url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== location.origin) return;
+  const font = /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
+  if (request.method !== 'GET' || (url.origin !== location.origin && !font)) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     if (request.mode === 'navigate') {
@@ -45,7 +46,7 @@ self.addEventListener('fetch', event => {
     if (hit) return hit;
     try {
       const fresh = await fetch(request);
-      if (fresh.ok) cache.put(request, fresh.clone());
+      if (fresh.ok || fresh.type === 'opaque') cache.put(request, fresh.clone());
       return fresh;
     } catch (error) {
       return (await cache.match(request, {ignoreSearch: true})) || Response.error();

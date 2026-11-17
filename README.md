@@ -62,3 +62,8 @@ Routing documentation and demo-server policy: https://project-osrm.org/docs/v5.2
 - `sw.js` + `manifest.webmanifest`: offline reading and "add to home screen". Bump `VERSION` in `sw.js` together with the `?v=` strings in `index.html`.
 - Overview "now" card: before departure it shows prep status; during the trip it shows the next stop (progress is tapped by the user and stored in `localStorage`). Append `?now=2026-12-12T09:00` (Bangkok time) to preview a given day.
 - Tools sheet (工具 button): currency converter, large-print Thai cards for drivers, phrases. SOS button: emergency numbers and tonight's stay.
+
+## Visual layer
+
+- `scene.js` draws the hero illustration (Koh Samet, Wat Arun, Bangkok skyline) as inline SVG; `immersive.css` themes it by Bangkok local time (`dawn`, `day`, `sunset`, `night`). Append `?sky=sunset` to preview a sky.
+- Display fonts (Fraunces, Noto Serif TC) load from Google Fonts and fall back to system serif offline until cached.
