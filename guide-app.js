@@ -77,9 +77,11 @@
   }
   function body(card,into){
     for(const text of card.paras||[])into.append(el('p','',text));
-    if(card.facts)into.append(facts(card.facts));
+    if(card.facts)into.append(card.calls?calls(card.facts):facts(card.facts));
+    for(const data of card.boards||[])into.append(board(data));
+    if(card.line)into.append(metro(card.line));
     if(card.list||card.tips){const ul=el('ul');for(const text of [...(card.list||[]),...(card.tips||[])])ul.append(el('li','',text));into.append(ul);}
-    if(card.table)into.append(table(card.table));
+    if(card.table)into.append(card.flash?flashcards(card.table.rows):table(card.table));
     if(card.warn)into.append(el('p','note',card.warn));
     if(card.links?.length){const row=el('div','actions');for(const [text,href] of card.links)row.append(link(text+(href.startsWith('#')||href.startsWith('tel:')?'':' ↗'),href,'btn'));into.append(row);}
   }
@@ -93,26 +95,82 @@
     if(data.id){box.append(shareButton(view+'/'+data.id,data.title,'card-share'));register({title:data.title,text:flatten(data),where:views.find(v=>v.id===view).label,hash:view+'/'+data.id});}
     return box;
   }
-  function title(text,sub){const head=el('div','view-title');head.append(el('h2','',text));if(sub)head.append(el('p','',sub));return head;}
   function toc(view,items){const nav=el('nav','toc');nav.setAttribute('aria-label','本頁目錄');for(const item of items)nav.append(link(item.title,'#'+view+'/'+item.id));return nav;}
   function mapButton(text,action){const button=el('button','btn',text);button.type='button';button.addEventListener('click',()=>{history.pushState(null,'','#map');route();action(window.TripMap);});return button;}
+
+
+  // ---- crafted blocks: page banners, departure boards, metro line, flashcards, call tiles ----
+  const viewScenes={'每日行程':'300 350 860 310','住宿':'40 400 660 260','交通':'620 300 820 330','實用資訊':'690 410 600 250'};
+  const dayScenes={d12:['30 380 720 290',15.2],d13:['640 395 540 280',17.72],d14:['880 370 560 290',10.5],d15:['740 320 700 340',20.6],d16:['400 140 780 340',6.45]};
+  const stayScenes={ratchada:['900 400 540 240',19.4],baanploy:['60 430 600 220',14.5],seaqueen:['260 420 620 230',17.7]};
+  function art(node,box,hour){
+    node.insertAdjacentHTML('afterbegin',window.TripScene.html({lite:true,box,align:'xMidYMid slice'}));
+    window.TripScene.apply(node,hour===undefined?(presetHour===undefined?liveHour():presetHour):hour);
+  }
+  function title(text,sub){
+    const box=el('div','banner'),inner=el('div','banner-text');
+    if(viewScenes[text])art(box,viewScenes[text]);
+    inner.append(el('h2','',text));if(sub)inner.append(el('p','',sub));box.append(inner);return box;
+  }
+  function board(data){
+    const box=el('div','board');box.append(el('p','board-title',data.title));
+    for(const [time,where,note] of data.rows){
+      const row=el('div','board-row'),flaps=el('span','flaps');flaps.setAttribute('aria-label',time);
+      [...time].forEach((char,i)=>{const cell=el('b',char===':'?'sep':'',char);cell.setAttribute('aria-hidden','true');cell.style.setProperty('--i',i);flaps.append(cell);});
+      row.append(flaps,el('span','',where),el('small','',note||''));box.append(row);
+    }
+    return box;
+  }
+  function metro(line){
+    const wrap=el('div','metro-wrap'),list=el('ol','metro');list.style.setProperty('--line-c',line.color);
+    wrap.append(el('p','metro-name',line.name));
+    line.stops.forEach((stop,i)=>{const li=el('li',stop.key?'key':'');li.append(el('strong','',stop.name));if(stop.note)li.append(el('span','',stop.note));if(i)li.dataset.n=String(i);list.append(li);});
+    wrap.append(list);return wrap;
+  }
+  function flashcards(rows){
+    const grid=el('div','phrase-grid');
+    for(const row of rows){const button=el('button');button.type='button';const thai=el('strong','',row[1]);thai.lang='th';button.append(el('span','',row[0]),thai,el('small','',row[2]));button.addEventListener('click',()=>showPhrase(row));grid.append(button);}
+    return grid;
+  }
+  function calls(rows){
+    const grid=el('div','calls');
+    for(const [label,number] of rows){const a=link('',telHref(number),'sos-call');a.append(el('span','',label),el('strong','',number));grid.append(a);}
+    return grid;
+  }
+  const quickIcons={
+    sos:'M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z',
+    driver:'M5 11l1.500-4.500A2 2 0 0 1 8.400 5h7.200a2 2 0 0 1 1.900 1.500L19 11M4 11h16v6H4zM7 17v2M17 17v2M7.500 14h.01M16.500 14h.01',
+    money:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM14.500 9.500C14 8.500 13 8 12 8c-1.400 0-2.500.800-2.500 2s1 1.700 2.500 2 2.500.800 2.500 2-1.100 2-2.500 2c-1 0-2-.500-2.500-1.500M12 6.500V8M12 16v1.500',
+    thai:'M4 5h16v11H9l-5 4V5zM8 9h8M8 12h5',
+    '#info/arrive':'M3 20h18M12 4v10M7.500 9.500 12 14l4.500-4.500',
+    '#stay/ratchada':'M3 11.500 12 4l9 7.500M5.500 10v9.500h13V10M10 19.500v-5h4v5',
+    '#move/routes':'M6 16V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10M6 12h12M5 16h14v2H5zM8 18v2M16 18v2M9 15h.01M15 15h.01',
+    '#move/boat':'M3 17l2 3h14l2-3M5 17v-6l7-3 7 3v6M12 3v5',
+    '#move/flights':'M21 3 3 10.500l6.500 2.500L12 20l3-5 6-12zM9.500 13 21 3',
+    '#info/entry':'M6 3h12v18H6zM9 8h6M9 12h6M9 16h3',
+    '#info/vat':'M6 3h12v18l-3-2-3 2-3-2-3 2V3zM9 8h6M9 12h6',
+    '#info/temple':'M12 2v3M9 9l3-4 3 4M7 14l5-5 5 5M5 20l1-6h12l1 6M3 20h18M11 20v-3h2v3'
+  };
 
   // ---- checklists (saved on this device only) ----
   let checks={};
   try{checks=JSON.parse(localStorage.getItem('tripnote-checks')||'{}')||{};}catch(error){checks={};}
   function checklist(items){
+    const wrap=el('div','checkwrap'),meter=el('div','meter'),bar=el('span'),count=el('p','meter-text');meter.append(bar);
+    const update=()=>{const done=items.filter(item=>checks[item.id]).length;bar.style.width=(done/items.length*100)+'%';count.textContent=done===items.length?'全部完成 ✓':done+'／'+items.length+' 完成';wrap.classList.toggle('all-done',done===items.length);};
     const ul=el('ul','checklist');
     for(const item of items){
       const li=el('li'),label=el('label'),input=el('input');input.type='checkbox';input.checked=Boolean(checks[item.id]);
-      input.addEventListener('change',()=>{checks[item.id]=input.checked;try{localStorage.setItem('tripnote-checks',JSON.stringify(checks));}catch(error){}});
+      input.addEventListener('change',()=>{checks[item.id]=input.checked;try{localStorage.setItem('tripnote-checks',JSON.stringify(checks));}catch(error){}update();});
       label.append(input,el('span','',item.text));li.append(label);ul.append(li);
     }
-    return ul;
+    update();wrap.append(count,meter,ul);return wrap;
   }
 
   // ---- stays ----
   function stayCard(stay,compact){
     const box=el('article','card');box.id='stay-'+stay.id;
+    if(!compact&&stayScenes[stay.id]){const pic=el('div','stay-art');art(pic,...stayScenes[stay.id]);box.append(pic);}
     box.append(el('p','kicker',stay.when+' · '+stay.who),el('h3','',stay.name));
     if(stay.zh)box.append(el('p','sub',stay.zh));
     const rows=[];
@@ -245,6 +303,7 @@
       let node;
       if(item.action){node=el('button');node.type='button';node.addEventListener('click',()=>item.action==='sos'?openSos():openTools(item.action));}
       else node=link('',item.href);
+      const glyph=quickIcons[item.action||item.href];if(glyph)node.append(icon(glyph));
       node.append(el('strong','',item.title),el('span','',item.text));quick.append(node);
     }
     view.append(quick);
@@ -291,7 +350,7 @@
     view.append(chips);
     for(const day of guide.days){
       const section=el('div','day');section.id='plan-'+day.id;section.dataset.day=day.id;section.style.setProperty('--day',dayColor(day));
-      const head=el('div','day-head');head.dataset.no=String(Number(day.date.slice(8)));head.append(el('h3','','Day '+(guide.days.indexOf(day)+1)+'｜'+day.title),el('p','',day.summary));if(day.sun)head.append(el('p','sun',day.sun));
+      const head=el('div','day-head');head.dataset.no=String(Number(day.date.slice(8)));if(dayScenes[day.id])art(head,...dayScenes[day.id]);head.append(el('h3','','Day '+(guide.days.indexOf(day)+1)+'｜'+day.title),el('p','',day.summary));if(day.sun)head.append(el('p','sun',day.sun));
       section.append(head);
       const list=el('ol','timeline');let number=0;
       for(const step of day.steps){
@@ -521,6 +580,7 @@
     const hero=document.querySelector('.hero'),home=currentView==='home'&&hero;
     document.body.classList.toggle('at-hero',Boolean(home&&scrollY<hero.offsetHeight-90));
     if(home&&!reducedMotion)hero.style.setProperty('--p',Math.min(1,scrollY/hero.offsetHeight).toFixed(3));
+    $('progress').style.transform='scaleX('+Math.min(1,scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight)).toFixed(4)+')';
   }
   let heroTick=false;
   addEventListener('scroll',()=>{if(heroTick)return;heroTick=true;requestAnimationFrame(()=>{heroTick=false;heroState();});},{passive:true});
@@ -564,6 +624,7 @@
 
   // ---- footer ----
   const footer=$('site-footer');
+  {const strip=el('div','foot-scene');art(strip,'0 470 1440 250',21.6);const words=el('p');words.append(el('strong','','旅途愉快'),el('span','','Bon voyage・เที่ยวให้สนุก'));strip.append(words);footer.append(strip);}
   footer.append(el('p','',guide.disclaimer),el('p','','資料整理：'+guide.updated.replaceAll('-','/')));
   const policies=el('p');policies.append(link('使用條款','terms.html'),link('隱私權','privacy.html'));footer.append(policies);
 
@@ -577,6 +638,10 @@
       node.classList.add('rv');node.style.setProperty('--d',([...node.parentNode.children].indexOf(node)%6*70)+'ms');seen.observe(node);
     }
   }
-  window.addEventListener('hashchange',route);
+  // Cross-fade between pages where the browser supports view transitions.
+  window.addEventListener('hashchange',()=>{
+    const next=decodeURIComponent(location.hash.slice(1)).split('/')[0]||'home';
+    if(document.startViewTransition&&!reducedMotion&&next!==currentView)document.startViewTransition(route);else route();
+  });
   route();
 })();

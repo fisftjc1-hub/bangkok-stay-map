@@ -229,6 +229,9 @@ window.GUIDE = {
   move: [
     {id: 'routes', title: '從住宿出發', wide: true, cards: [
       {id: 'mrt-table', title: '從 Ratchada Retreat 搭捷運', sub: '起點：MRT 藍線 Phra Ram 9（BL20），步行約 10–12 分鐘',
+        line: {name: 'MRT 藍線・往 Lak Song 方向', color: '#1f4fa3', stops: [
+          {name: 'Phra Ram 9', note: '住宿・Central Rama 9', key: true}, {name: 'Phetchaburi'}, {name: 'Sukhumvit', note: '轉 BTS Asok・Terminal 21', key: true}, {name: 'Queen Sirikit'}, {name: 'Khlong Toei'}, {name: 'Lumphini'},
+          {name: 'Si Lom', note: '轉 BTS Sala Daeng', key: true}, {name: 'Sam Yan'}, {name: 'Hua Lamphong'}, {name: 'Wat Mangkon', note: '中國城', key: true}, {name: 'Sam Yot'}, {name: 'Sanam Chai', note: '大皇宮・臥佛寺', key: true}]},
         table: {head: ['目的地', '怎麼搭', '時間', '票價'], rows: [
           ['Sanam Chai（大皇宮、臥佛寺）', '藍線往 Lak Song 方向直達，11 站，不用轉車', '約 25 分鐘', '約 42 泰銖'],
           ['Sukhumvit／Asok（Terminal 21）', '藍線 2 站到 Sukhumvit', '約 5 分鐘', '約 20 泰銖'],
@@ -246,6 +249,7 @@ window.GUIDE = {
     ]},
     {id: 'boat', title: '沙美島船班', cards: [
       {id: 'hotel-boat', title: 'Baan Ploy Sea 接駁船', sub: 'Ban Phe 的 Ao Prao Pier ↔ 沙美島',
+        boards: [{title: 'DEPARTURES・Ban Phe → 沙美島', rows: [['11:00', '沙美島 Baan Ploy Sea', '首班'], ['13:30', '沙美島 Baan Ploy Sea', ''], ['16:00', '沙美島 Baan Ploy Sea', '末班']]}, {title: 'DEPARTURES・沙美島 Na Dan → Ban Phe', rows: [['10:00', 'Ao Prao Pier', '首班'], ['12:30', 'Ao Prao Pier', ''], ['15:00', 'Ao Prao Pier', '末班']]}],
         facts: [['去程', '11:00／13:30／16:00'], ['回程', '10:00／12:30／15:00（Na Dan 碼頭 → Ao Prao Pier）'], ['船資', '來回成人 340 泰銖'], ['包快艇', '單程每艘：1–6 人 2,500 泰銖；7–18 人 5,000 泰銖'], ['碼頭電話', '+66 38 651 134'], ['碼頭停車', '住客每車每晚 100 泰銖']],
         tips: ['出發前 30 分鐘到碼頭報到。', '回程提前 30 分鐘在飯店大廳等。'], links: [['官方船班', 'https://www.baanploysea.com/transportation/'], ['Ao Prao Pier 位置', 'https://goo.gl/maps/q6UnTsFds2mRZZme7']]},
       {id: 'public-boat', title: '公船與快艇', sub: 'Nuan Thip 碼頭 ↔ Na Dan 碼頭',
@@ -255,6 +259,7 @@ window.GUIDE = {
     ]},
     {id: 'airport', title: '機場', cards: [
       {id: 'flights', title: '班機', sub: '中華航空・桃園 TPE 第一航廈 ↔ 蘇凡納布 BKK',
+        boards: [{title: 'FLIGHTS・中華航空', rows: [['22:30', 'CI837 → 曼谷 BKK', '12/11 桃園 T1'], ['14:05', 'CI832 → 桃園 TPE', '12/16 BKK']]}],
         facts: [['去程 CI837', '12/11（五）22:30 桃園起飛 → 12/12（六）01:35 抵達曼谷'], ['回程 CI832', '12/16（三）14:05 曼谷起飛 → 18:40 抵達桃園']],
         tips: ['時間皆為當地時間，曼谷比台灣慢 1 小時。', '去程建議 19:30–20:00 前到桃園機場（起飛前 2.5–3 小時）；集合時間與地點以主辦通知為準。', '回程 10:30 從住宿出發，約 11:30 前到機場；要退稅的人不要再晚。'],
         links: [['CI837 班機動態', 'https://www.flightaware.com/live/flight/CAL837'], ['CI832 班機動態', 'https://www.flightaware.com/live/flight/CAL832']]},
@@ -290,11 +295,11 @@ window.GUIDE = {
       {id: 'vape', title: '電子菸與大麻', list: ['電子菸在泰國全面違法，攜帶入境、持有都會被罰，請不要帶。', '大麻自 2025 年 6 月起僅限醫療用途，購買需處方；公共場所吸食會被罰。', '任何大麻製品帶回台灣都是違法的，包含零食、飲料。'], warn: '買零食、飲料時留意包裝上的大麻葉圖案。'}
     ]},
     {id: 'emergency', title: '緊急聯絡', cards: [
-      {id: 'numbers', title: '緊急電話', facts: [['觀光警察（可說英文）', '1155'], ['救護車', '1669'], ['警察', '191'], ['消防', '199']], tips: ['遇到糾紛、被敲竹槓先打 1155。', '護照遺失：先到警局報案，再聯絡辦事處。']},
+      {id: 'numbers', title: '緊急電話', calls: true, facts: [['觀光警察（可說英文）', '1155'], ['救護車', '1669'], ['警察', '191'], ['消防', '199']], tips: ['遇到糾紛、被敲竹槓先打 1155。', '護照遺失：先到警局報案，再聯絡辦事處。']},
       {id: 'teco', title: '駐泰國台北經濟文化辦事處', facts: [['急難救助電話', '+66 81 666 4006'], ['總機電話', '+66 2 119 3555'], ['地址', '40/64 Vibhavadi-Rangsit 66, Laksi, Bangkok 10210'], ['外交部旅外急難專線', '台灣國內免付費 0800-085-095']], tips: ['急難救助電話限車禍、搶劫、被捕等緊急狀況使用。'], links: [['外交部領事事務局', 'https://www.boca.gov.tw/sp-foof-countrycp-03-24-dec45-03-1.html']]}
     ]},
     {id: 'thai', title: '常用泰語', wide: true, cards: [
-      {id: 'phrases', title: '指給對方看也可以', table: {head: ['中文', '泰文', '唸法'], rows: [
+      {id: 'phrases', title: '點一下，放大給對方看', flash: true, table: {head: ['中文', '泰文', '唸法'], rows: [
         ['你好', 'สวัสดี', 'sa-wat-dee（男生加 khrap，女生加 kha）'],
         ['謝謝', 'ขอบคุณ', 'khop-khun'],
         ['多少錢？', 'เท่าไหร่', 'thao-rai'],

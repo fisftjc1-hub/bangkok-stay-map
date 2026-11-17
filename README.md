@@ -67,3 +67,5 @@ Routing documentation and demo-server policy: https://project-osrm.org/docs/v5.2
 
 - `scene.js` draws the hero illustration (Koh Samet, Wat Arun, Bangkok skyline) as inline SVG and computes the whole sky from one number, the hour in Bangkok: `TripScene.apply(node, hour)` interpolates colour keyframes and moves the sun and moon along arcs. The page opens with a time-lapse from 22:30 to the current time, and the slider on the hero scrubs through the day. Append `?sky=sunset` (`dawn`, `day`, `night`) to open on a fixed sky.
 - Display fonts (Fraunces, Noto Serif TC) load from Google Fonts and fall back to system serif offline until cached.
+- The same scene is reused across the site through `TripScene.html({lite: true, box})`: page banners, a diorama per day (each with its own crop and hour), stay cards and the footer.
+- Content blocks with their own look: departure boards (`boards` on a card), the MRT line strip (`line`), Thai flashcards (`flash`), call tiles (`calls`) and checklist progress meters.

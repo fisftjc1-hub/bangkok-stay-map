@@ -160,6 +160,76 @@ body{background:linear-gradient(180deg,#f4f0e6 0,#f5f7f3 520px) no-repeat,var(--
 .step{box-shadow:0 1px 2px #18342f0a,0 8px 22px #18342f0a;transition:box-shadow .2s}
 .step[open]{box-shadow:0 14px 34px #18342f1c}
 
+/* ==== Whole-site craft: banners, dioramas, boards, metro line, flashcards ==== */
+.progress{position:fixed;left:0;right:0;top:0;height:3px;z-index:1500;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#1b8272,#ffba68,#d5586a);pointer-events:none}
+.banner{position:relative;isolation:isolate;overflow:hidden;display:grid;align-items:end;min-height:230px;border-radius:26px;margin-bottom:20px;color:#fff;background:var(--sky2,#16305c);box-shadow:0 18px 40px #0b163a2b;--p:0}
+.banner .scene,.day-head .scene,.stay-art .scene,.foot-scene .scene{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#000000ad,#0000 64%)}
+.banner-text{padding:24px 28px}
+.banner h2{font-family:var(--serif-tc);font-weight:900;font-size:40px;line-height:1.2;letter-spacing:.08em;text-shadow:0 2px 20px #0009}
+.banner p{font-size:14px;margin-top:4px;opacity:.94;text-shadow:0 1px 10px #000b}
+.day-head{isolation:isolate;display:grid;align-content:end;min-height:230px;--p:0}
+.day-head::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#000000b8,#0000002e 62%,#0000)}
+.day-head::after{color:#ffffff3d;z-index:-1;bottom:auto;top:-18px;right:16px;font-size:150px}
+.day-head h3,.day-head p{text-shadow:0 2px 14px #000a}
+.stay-art{position:relative;isolation:isolate;overflow:hidden;height:150px;margin:-18px -18px 16px;border-radius:17px 17px 0 0;--p:0;background:var(--sky2,#16305c)}
+.foot-scene{position:relative;isolation:isolate;overflow:hidden;display:grid;place-items:center;height:170px;border-radius:26px;margin-bottom:20px;color:#fff;text-align:center;--p:0;background:#0a1838}
+.foot-scene strong{display:block;font-family:var(--serif-tc);font-weight:900;font-size:30px;letter-spacing:.3em;text-indent:.3em;text-shadow:0 2px 18px #000a}
+.foot-scene span{display:block;font-family:var(--display);font-style:italic;font-size:14px;letter-spacing:.14em;margin-top:6px;opacity:.9}
+
+/* Departure board */
+.board{margin-top:14px;padding:14px 16px 10px;border-radius:16px;background:linear-gradient(180deg,#171e28,#0b1017);color:#ffd166;box-shadow:inset 0 1px 0 #ffffff17,0 12px 26px #0b101838;overflow-x:auto}
+.card .board-title{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.2em;color:#8fa0b5}
+.board-title::before{content:"";width:7px;height:7px;border-radius:50%;background:#49e08a;box-shadow:0 0 9px #49e08a;animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+.board-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px 0;border-top:1px solid #ffffff14}
+.board-row>span:not(.flaps){color:#eef3f9;font-size:14px;font-weight:600;white-space:nowrap}
+.board-row small{color:#8fa0b5;font-size:12px;white-space:nowrap}
+.flaps{display:inline-flex;gap:2px;perspective:300px}
+.flaps b{display:grid;place-items:center;width:21px;height:31px;border-radius:4px;background:linear-gradient(180deg,#2b3440 0 48%,#070a0f 48% 52%,#232b36 52%);font:700 18px/1 ui-monospace,"SF Mono","Cascadia Mono",Consolas,monospace;color:#ffd166;text-shadow:0 0 10px #ffd16666}
+.flaps b.sep{width:7px;background:none}
+.view:not([hidden]) .flaps b{animation:flap .7s cubic-bezier(.3,.7,.2,1) backwards;animation-delay:calc(var(--i)*70ms + .25s)}
+@keyframes flap{0%{transform:rotateX(-90deg);opacity:0}60%{transform:rotateX(18deg);opacity:1}100%{transform:none}}
+
+/* Metro line strip */
+.metro-wrap{margin:16px -18px 0;padding:14px 0 4px;border-top:1px solid var(--line)}
+.card .metro-name{margin:0 18px 6px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.card ol.metro{list-style:none;display:flex;margin:0;padding:10px 18px 12px 32px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin}
+.metro li{position:relative;flex:0 0 96px;margin:0;padding:28px 8px 0 0;font-size:12px;line-height:1.4;color:var(--muted);scroll-snap-align:start}
+.metro li::before{content:"";position:absolute;left:0;right:0;top:8px;height:6px;background:var(--line-c)}
+.metro li:last-child::before{display:none}
+.metro li::after{content:"";position:absolute;left:-6px;top:4px;width:14px;height:14px;box-sizing:border-box;border-radius:50%;background:#fff;border:3px solid var(--line-c)}
+.metro li.key{color:var(--ink)}
+.metro li.key::after{left:-10px;top:0;width:22px;height:22px;border-width:5px;box-shadow:0 0 0 4px color-mix(in srgb,var(--line-c) 18%,transparent)}
+.metro strong{display:block;font-weight:650}
+.metro li.key strong{font-weight:800;font-size:13.5px}
+.metro span{display:block;margin-top:2px;font-size:11.5px;color:var(--green);font-weight:650}
+
+/* Thai flashcards, call tiles, checklist meter, quick icons */
+.phrase-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.phrase-grid button{display:grid;gap:4px;align-content:center;min-height:118px;padding:14px;text-align:left;border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#fffdf7,#f6f1e4);color:var(--ink);font:inherit;transition:transform .2s,box-shadow .2s}
+.phrase-grid button:hover{transform:translateY(-4px) rotate(-.6deg);box-shadow:0 12px 24px #18342f1f}
+.phrase-grid span{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.08em}
+.phrase-grid strong{font-size:23px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+.phrase-grid small{font-size:11.5px;color:var(--muted)}
+.calls{display:grid;gap:8px;margin-top:12px}
+.meter{height:6px;margin:6px 0 2px;border-radius:3px;background:var(--soft);overflow:hidden}
+.meter span{display:block;width:0;height:100%;border-radius:3px;background:linear-gradient(90deg,#1b8272,#d39339);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.card .meter-text{margin:0;font-size:12.5px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums}
+.all-done .meter span{background:linear-gradient(90deg,#1b8272,#49c08a)}
+.quick a,.quick button{grid-template-columns:42px minmax(0,1fr);column-gap:12px;align-items:center}
+.quick svg{grid-row:1/3;width:42px;height:42px;box-sizing:border-box;padding:9px;border-radius:13px;background:var(--soft);fill:none;stroke:var(--green);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:background .2s,stroke .2s}
+.quick a:hover svg,.quick button:hover svg{background:var(--green);stroke:#fff}
+.quick strong{align-self:end}.quick span{align-self:start}
+.toc a{transition:transform .2s,border-color .2s,background .2s}
+.toc a:hover{transform:translateY(-2px);background:#fff}
+.sheet[open]{animation:sheetIn .38s cubic-bezier(.2,.8,.2,1)}
+.sheet::backdrop{animation:fadeIn .3s}
+@keyframes sheetIn{from{opacity:0;transform:translateY(44px) scale(.98)}}
+@keyframes fadeIn{from{opacity:0}}
+::view-transition-old(root){animation-duration:.22s}
+::view-transition-new(root){animation-duration:.38s}
+
 @media(max-width:980px){
   :root{--header-h:62px;--guide-pad:18px}
   .tabs{background:#ffffffe8;-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px)}
@@ -186,9 +256,14 @@ body{background:linear-gradient(180deg,#f4f0e6 0,#f5f7f3 520px) no-repeat,var(--
   .view-title h2{font-size:25px}
   .day-head{padding:20px 18px}.day-head h3{font-size:23px}.day-head::after{font-size:130px;bottom:-30px}
   .timeline::before{left:12px}
+  .banner{min-height:190px;border-radius:22px}.banner-text{padding:18px 20px}.banner h2{font-size:31px}
+  .day-head{min-height:210px}.day-head::after{font-size:120px;top:-12px}
+  .flash{grid-template-columns:repeat(2,minmax(0,1fr))}.phrase-grid strong{font-size:20px}.phrase-grid button{min-height:104px;padding:12px}
+  .board-row{gap:10px}.board-row>span:not(.flaps){font-size:13px;white-space:normal}
+  .foot-scene{height:150px;border-radius:22px}.foot-scene strong{font-size:25px}
 }
 @media(prefers-reduced-motion:reduce){
-  .scene *,.hero-text *,.view,.rv.in{animation:none!important}
+  .scene *,.hero-text *,.view,.rv.in,.flaps b,.sheet[open]{animation:none!important}
   .hero-text,.sc-far,.sc-mid,.sc-near,.sc-stars{transform:none}
   .pass-body{transform:none}
   .hero-text{opacity:1}

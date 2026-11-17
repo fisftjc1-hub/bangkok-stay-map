@@ -19,18 +19,20 @@
     return d + 'V900H-' + len + 'Z';
   }
 
-  function build() {
+  let uid = 0;
+  // opts.lite: lighter version for banners; opts.box / opts.align: crop to a part of the scene.
+  function build(opts = {}) {
     let stars = '', windows = '', glints = '', lanterns = '';
-    for (let i = 0; i < 110; i++) stars += '<circle cx="' + Math.round(rand() * 1440) + '" cy="' + Math.round(rand() * 560 - 40) + '" r="' + (0.6 + rand() * 1.5).toFixed(1) + '" style="animation-delay:-' + (rand() * 6).toFixed(1) + 's"/>';
+    for (let i = 0; i < (opts.lite ? 50 : 110); i++) stars += '<circle cx="' + Math.round(rand() * 1440) + '" cy="' + Math.round(rand() * 560 - 40) + '" r="' + (0.6 + rand() * 1.5).toFixed(1) + '" style="animation-delay:-' + (rand() * 6).toFixed(1) + 's"/>';
     for (const [x, w, h] of towers) for (let i = 0; i < Math.round(h * w / 260); i++) windows += '<rect x="' + (x + 3 + Math.round(rand() * (w - 8))) + '" y="' + (HORIZON - h + 6 + Math.round(rand() * (h - 14))) + '" width="3" height="4"/>';
     for (let i = 0; i < 12; i++) { const w = 26 + rand() * 90 + i * 9; glints += '<rect x="' + (720 - w / 2).toFixed(0) + '" y="' + (HORIZON + 10 + i * 19) + '" width="' + w.toFixed(0) + '" height="' + (2 + i * 0.5).toFixed(1) + '" rx="2" style="animation-delay:-' + (rand() * 4).toFixed(1) + 's"/>'; }
-    for (let i = 0; i < 16; i++) { const s = (0.55 + rand() * 0.9).toFixed(2); lanterns += '<g transform="translate(' + Math.round(470 + rand() * 700) + ',' + (HORIZON - 20) + ') scale(' + s + ')"><g style="animation-duration:' + (26 + rand() * 26).toFixed(0) + 's;animation-delay:-' + (rand() * 50).toFixed(1) + 's"><circle r="13" fill="url(#sc-lamp)"/><path d="M-4,-6Q0,-9 4,-6L3.2,5H-3.2Z"/></g></g>'; }
+    for (let i = 0; i < (opts.lite ? 9 : 16); i++) { const s = (0.55 + rand() * 0.9).toFixed(2); lanterns += '<g transform="translate(' + Math.round(470 + rand() * 700) + ',' + (HORIZON - 20) + ') scale(' + s + ')"><g style="animation-duration:' + (26 + rand() * 26).toFixed(0) + 's;animation-delay:-' + (rand() * 50).toFixed(1) + 's"><circle r="13" fill="url(#sc-lamp)"/><path d="M-4,-6Q0,-9 4,-6L3.2,5H-3.2Z"/></g></g>'; }
     const city = towers.map(([x, w, h]) => '<rect x="' + x + '" y="' + (HORIZON - h) + '" width="' + w + '" height="' + (h + 2) + '"/>').join('') +
       '<path d="M1258,' + (HORIZON - 204) + 'v-34M1083,' + (HORIZON - 176) + 'v-22" class="sc-stroke" stroke-width="2"/>';
     const temple = '<g transform="translate(880,' + (HORIZON + 2) + ') scale(.86)"><path d="' + prang + '"/><path d="' + prang + '" transform="translate(-74,0) scale(.42)"/><path d="' + prang + '" transform="translate(74,0) scale(.42)"/><path d="' + prang + '" transform="translate(-112,0) scale(.3)"/><path d="' + prang + '" transform="translate(112,0) scale(.3)"/><rect x="-140" y="-8" width="280" height="12"/></g>';
     const island = '<path d="M-90,' + (HORIZON + 6) + 'V574H0C110,532 250,540 372,574C458,598 540,622 632,' + (HORIZON + 6) + 'Z"/>' +
       '<g transform="translate(520,612) scale(1.05)">' + palm + '</g><g transform="translate(560,624) scale(.72) rotate(6)">' + palm + '</g><g transform="translate(404,588) scale(.9) rotate(-5)">' + palm + '</g><g transform="translate(250,560) scale(.78) rotate(4)">' + palm + '</g><g transform="translate(120,566) scale(1) rotate(-3)">' + palm + '</g>';
-    return '<svg class="scene" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">' +
+    const html = '<svg class="scene" viewBox="' + (opts.box || '0 0 1440 900') + '" preserveAspectRatio="' + (opts.align || 'xMidYMax slice') + '" aria-hidden="true" focusable="false">' +
       '<defs><linearGradient id="sc-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sc-sky1"/><stop offset=".42" class="sc-sky2"/><stop offset=".8" class="sc-sky3"/><stop offset="1" class="sc-sky4"/></linearGradient>' +
       '<radialGradient id="sc-glow"><stop offset="0" style="stop-color:var(--sun);stop-opacity:.85"/><stop offset=".35" style="stop-color:var(--sun);stop-opacity:.32"/><stop offset="1" style="stop-color:var(--sun);stop-opacity:0"/></radialGradient>' +
       '<radialGradient id="sc-moonglow"><stop offset="0" stop-color="#bcd4ff" stop-opacity=".55"/><stop offset=".4" stop-color="#9fbfff" stop-opacity=".16"/><stop offset="1" stop-color="#9fbfff" stop-opacity="0"/></radialGradient>' +
@@ -54,11 +56,13 @@
       '<g class="sc-mid">' + temple + '</g>' +
       '<rect x="0" y="' + HORIZON + '" width="1440" height="260" fill="url(#sc-sea)"/>' +
       // Mirror image of the land in the water, wobbled by a turbulence filter.
-      '<g mask="url(#sc-reflectmask)"><g class="sc-reflect" filter="url(#sc-ripple)"><g transform="translate(0,' + (HORIZON * 2 + 2) + ') scale(1,-1)"><g class="sc-r-far">' + city + '</g><g class="sc-r-win">' + windows + '</g><g class="sc-r-mid">' + temple + '</g><g class="sc-r-near">' + island + '</g></g></g></g>' +
+      (opts.lite ? '' : '<g mask="url(#sc-reflectmask)"><g class="sc-reflect" filter="url(#sc-ripple)"><g transform="translate(0,' + (HORIZON * 2 + 2) + ') scale(1,-1)"><g class="sc-r-far">' + city + '</g><g class="sc-r-win">' + windows + '</g><g class="sc-r-mid">' + temple + '</g><g class="sc-r-near">' + island + '</g></g></g></g>') +
       '<g class="sc-glints">' + glints + '</g>' +
       '<g class="sc-near">' + island + '</g>' +
       '<path class="sc-wave w1" d="' + wave(HORIZON + 40, 7, 240) + '"/><path class="sc-wave w2" d="' + wave(HORIZON + 100, 10, 360) + '"/><path class="sc-wave w3" d="' + wave(HORIZON + 170, 14, 480) + '"/>' +
       '</svg>';
+    uid++;
+    return html.replace(/(id="|url\(#)(sc-[a-z]+)/g, '$1$2-' + uid);
   }
 
   // ---- sky model: keyframes through the day, interpolated ----
