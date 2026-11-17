@@ -1,6 +1,6 @@
 // Offline support: keeps the guide pages readable without a connection.
 // Map tiles, Google Maps and external links still need the network.
-const VERSION = '20261117-guide6';
+const VERSION = '20261117-guide7';
 const CACHE = 'tripnote-' + VERSION;
 const EXTRA = ['favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'roads/home-ratchada.json?v=20261012', 'terms.html', 'privacy.html'];
 

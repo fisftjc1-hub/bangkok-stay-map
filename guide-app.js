@@ -47,7 +47,8 @@
   const today=bangkokToday();
   const bangkokClock=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(clock());
   const skyParam=new URLSearchParams(location.search).get('sky');
-  const sky=['night','dawn','day','sunset'].includes(skyParam)?skyParam:window.TripScene.sky(Number(bangkokClock.slice(0,2))+Number(bangkokClock.slice(3))/60);
+  const presetHour=window.TripScene.presets[skyParam];
+  const liveHour=()=>{const text=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(clock());return Number(text.slice(0,2))+Number(text.slice(3))/60;};
   const todayDay=guide.days.find(day=>day.date===today);
   const dayColor=day=>itinerary.days.find(d=>d.id===day.id)?.color||'#125c53';
 
@@ -139,6 +140,37 @@
     return box;
   }
 
+
+  // ---- living sky: one number (the hour in Bangkok) drives the whole scene ----
+  function skyControl(hero,range,out,reset){
+    let live=presetHour===undefined,frame=0;
+    const show=hour=>{
+      const h=((hour%24)+24)%24,mins=Math.round(h*60)%1440;
+      window.TripScene.apply(hero,h);range.value=String(mins);
+      out.textContent=String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');
+    };
+    const stop=()=>{cancelAnimationFrame(frame);frame=0;};
+    function run(from,delta,ms){
+      stop();if(reducedMotion||!delta){show(from+delta);return;}
+      const start=performance.now();
+      const step=now=>{const t=Math.min(1,(now-start)/ms),eased=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;show(from+delta*eased);frame=t<1?requestAnimationFrame(step):0;};
+      frame=requestAnimationFrame(step);
+    }
+    range.addEventListener('input',()=>{stop();live=false;reset.hidden=false;show(Number(range.value)/60);});
+    reset.addEventListener('click',()=>{const from=Number(range.value)/60;let delta=liveHour()-from;if(delta>12)delta-=24;if(delta<-12)delta+=24;live=true;reset.hidden=true;run(from,delta,1100);});
+    // Opening time-lapse: from take-off (22:30) forward to the current time in Bangkok.
+    const target=live?liveHour():presetHour,span=((target-22.5)%24+24)%24;
+    if(reducedMotion)show(target);
+    else{show(22.5);setTimeout(()=>{if(live||presetHour!==undefined)run(22.5,span,1800+span*210);},700);}
+    setInterval(()=>{if(live&&!frame)show(liveHour());},60000);
+    hero.addEventListener('pointermove',event=>{
+      if(event.pointerType!=='mouse'||reducedMotion)return;
+      const box=hero.getBoundingClientRect();
+      hero.style.setProperty('--mx',((event.clientX-box.left)/box.width*2-1).toFixed(3));hero.style.setProperty('--my',((event.clientY-box.top)/box.height*2-1).toFixed(3));
+    });
+    hero.addEventListener('pointerleave',()=>{hero.style.setProperty('--mx','0');hero.style.setProperty('--my','0');});
+  }
+
   // ---- overview ----
   const NS='http://www.w3.org/2000/svg';
   function icon(d){const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const path=document.createElementNS(NS,'path');path.setAttribute('d',d);svg.append(path);return svg;}
@@ -157,11 +189,20 @@
     main.append(el('p','pass-top',flight.label+'・中華航空'),route,info);
     const bars=el('span','pass-bars');bars.setAttribute('aria-hidden','true');
     stub.append(el('small','','FLIGHT'),el('span','pass-code',flight.code),bars);
-    inner.append(main,stub);box.append(inner);return box;
+    inner.append(main,stub);box.append(inner);
+    // Tilt towards the pointer with a moving sheen.
+    box.addEventListener('pointermove',event=>{
+      if(event.pointerType!=='mouse'||reducedMotion)return;
+      const r=box.getBoundingClientRect(),x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height;
+      box.style.setProperty('--ry',((x-.5)*12).toFixed(2)+'deg');box.style.setProperty('--rx',((.5-y)*10).toFixed(2)+'deg');
+      box.style.setProperty('--gx',(x*100).toFixed(1)+'%');box.style.setProperty('--gy',(y*100).toFixed(1)+'%');box.style.setProperty('--go','1');
+    });
+    box.addEventListener('pointerleave',()=>{for(const name of ['--rx','--ry','--go'])box.style.removeProperty(name);});
+    return box;
   }
   function renderHome(){
     const view=$('view-home');view.replaceChildren();
-    const hero=el('div','hero');hero.dataset.sky=sky;hero.insertAdjacentHTML('afterbegin',window.TripScene.html());
+    const hero=el('div','hero');hero.insertAdjacentHTML('afterbegin',window.TripScene.html());
     const text=el('div','hero-text'),heading=el('h2');heading.setAttribute('aria-label',guide.trip.name);
     [...guide.trip.name].forEach((char,i)=>{const span=el('span','',char);span.setAttribute('aria-hidden','true');span.style.setProperty('--i',i);heading.append(span);});
     const meta=el('div','hero-meta');
@@ -172,7 +213,11 @@
     else if(diff===0)count.append(el('span','','今晚出發'),el('strong','','22:30'),el('span','','桃園第一航廈'));
     else count.append(el('span','','旅程已結束，辛苦了'));
     text.append(el('p','hero-kicker','TRIP NOTE'),heading,el('p','hero-latin','Bangkok — Koh Samet'),meta,count);
-    hero.append(text,el('p','hero-sky',window.TripScene.label[sky]+' '+bangkokClock+'・天色跟著當地時間變化'));view.append(hero);
+    const time=el('div','hero-time'),range=el('input'),clockOut=el('output'),reset=el('button','','回到現在');
+    range.type='range';range.min='0';range.max='1439';range.step='1';range.setAttribute('aria-label','拖曳調整曼谷的時間，看天色變化');reset.type='button';reset.hidden=true;
+    time.append(el('label','','曼谷'),clockOut,range,reset);
+    hero.append(text,el('p','hero-hint','天空是即時算出來的・拖曳太陽看一整天'),time);view.append(hero);
+    skyControl(hero,range,clockOut,reset);
     if(guide.trip.flights?.length){const passes=el('div','passes');for(const flight of guide.trip.flights)passes.append(pass(flight));view.append(passes);}
 
     const nowBox=el('article','card now');nowBox.id='home-now';view.append(nowBox);renderNow(nowBox);
