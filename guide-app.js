@@ -143,7 +143,7 @@
 
   // ---- living sky: one number (the hour in Bangkok) drives the whole scene ----
   function skyControl(hero,range,out,reset){
-    let live=presetHour===undefined,frame=0;
+    let live=presetHour===undefined,frame=0,settle=0;
     const show=hour=>{
       const h=((hour%24)+24)%24,mins=Math.round(h*60)%1440;
       window.TripScene.apply(hero,h);range.value=String(mins);
@@ -155,8 +155,10 @@
       const start=performance.now();
       const step=now=>{const t=Math.min(1,(now-start)/ms),eased=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;show(from+delta*eased);frame=t<1?requestAnimationFrame(step):0;};
       frame=requestAnimationFrame(step);
+      // If the browser paused animation frames (background tab), still land on the right time.
+      clearTimeout(settle);settle=setTimeout(()=>{if(frame){stop();show(from+delta);}},ms+1500);
     }
-    range.addEventListener('input',()=>{stop();live=false;reset.hidden=false;show(Number(range.value)/60);});
+    range.addEventListener('input',()=>{clearTimeout(settle);stop();live=false;reset.hidden=false;show(Number(range.value)/60);});
     reset.addEventListener('click',()=>{const from=Number(range.value)/60;let delta=liveHour()-from;if(delta>12)delta-=24;if(delta<-12)delta+=24;live=true;reset.hidden=true;run(from,delta,1100);});
     // Opening time-lapse: from take-off (22:30) forward to the current time in Bangkok.
     const target=live?liveHour():presetHour,span=((target-22.5)%24+24)%24;
