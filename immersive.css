@@ -258,7 +258,7 @@ body{background:linear-gradient(180deg,#f4f0e6 0,#f5f7f3 520px) no-repeat,var(--
   .timeline::before{left:12px}
   .banner{min-height:190px;border-radius:22px}.banner-text{padding:18px 20px}.banner h2{font-size:31px}
   .day-head{min-height:210px}.day-head::after{font-size:120px;top:-12px}
-  .flash{grid-template-columns:repeat(2,minmax(0,1fr))}.phrase-grid strong{font-size:20px}.phrase-grid button{min-height:104px;padding:12px}
+  .phrase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phrase-grid strong{font-size:20px}.phrase-grid button{min-height:104px;padding:12px}
   .board-row{gap:10px}.board-row>span:not(.flaps){font-size:13px;white-space:normal}
   .foot-scene{height:150px;border-radius:22px}.foot-scene strong{font-size:25px}
 }
